@@ -1,0 +1,975 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>DataAtlas — Brand sheet</title>
+<style>
+  :root {
+    /* Brand */
+    --pale:   #a5f3fc;
+    --primary:#22d3ee;
+    --accent: #38bdf8;
+    --deep:   #0e7490;
+    --violet: #a78bfa;
+    --violet-deep: #7c3aed;
+
+    /* Sheet (dark) */
+    --bg: #0b0d10;
+    --bg-elev: #0f1216;
+    --card: #131820;
+    --card-2: #161b22;
+    --border: #1f2329;
+    --border-2: #2a313a;
+    --fg: #e6e8eb;
+    --muted: #8b949e;
+    --muted-2: #5b626a;
+
+    /* Tile (dark theme) */
+    --tile-bg: linear-gradient(180deg, #1a2329, #0f1418);
+    --tile-border: #1f2c34;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-feature-settings: "ss01", "cv11";
+    min-height: 100vh;
+    padding: 56px 48px 96px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+
+  /* Header */
+  .header { display: flex; flex-direction: column; gap: 10px; margin-bottom: 56px; }
+  .eyebrow { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  .h1 { font-size: 40px; font-weight: 700; letter-spacing: -0.02em; margin: 0; line-height: 1.1; }
+  .h1 .accent { color: var(--primary); }
+  .lede { color: var(--muted); font-size: 15px; line-height: 1.55; max-width: 720px; margin: 0; }
+
+  /* Section */
+  .section { margin-bottom: 64px; }
+  .section-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .section-num { font-size: 11px; color: var(--muted-2); font-variant-numeric: tabular-nums; letter-spacing: 0.1em; }
+  .section-title { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+  .section-sub { color: var(--muted); font-size: 13px; margin-left: auto; }
+
+  .grid { display: grid; gap: 16px; }
+  .grid--3 { grid-template-columns: repeat(3, 1fr); }
+  .grid--4 { grid-template-columns: repeat(4, 1fr); }
+  .grid--auto { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 20px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .card--light { background: #f7f9fb; border-color: #d9dfe5; color: #1a1f24; }
+  .card--light .label { color: #6b7682; }
+  .card--light .label strong { color: #1a1f24; }
+  .card .preview { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 140px; width: 100%; }
+  .label { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.45; }
+  .label strong { color: var(--fg); display: block; font-size: 12px; font-weight: 600; margin-bottom: 3px; letter-spacing: 0; }
+
+  /* Tile (dark) */
+  .tile {
+    background: var(--tile-bg);
+    border: 1px solid var(--tile-border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .tile--light {
+    background: linear-gradient(180deg, #f7f9fb, #eef2f6);
+    border: 1px solid #d9dfe5;
+  }
+
+  /* Wordmark */
+  .wordmark {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .wordmark .accent { color: var(--primary); }
+
+  /* Lockup row used in cards */
+  .lockup { display: flex; align-items: center; gap: 10px; }
+  .lockup-stacked { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+
+  /* Hero */
+  .hero {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 56px 40px;
+    margin-bottom: 64px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  .hero__display { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  .hero__meta { color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .hero__meta h3 { color: var(--fg); font-size: 13px; font-weight: 600; margin: 0 0 8px; letter-spacing: 0.02em; text-transform: uppercase; }
+  .hero__meta p { margin: 0 0 16px; }
+  .hero__meta .kv { display: grid; grid-template-columns: 90px 1fr; gap: 6px 16px; font-size: 12px; }
+  .hero__meta .kv dt { color: var(--muted-2); }
+  .hero__meta .kv dd { margin: 0; color: var(--fg); font-variant-numeric: tabular-nums; }
+
+  /* Color swatches */
+  .swatch {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .swatch__chip { width: 100%; height: 80px; border-radius: 8px; }
+  .swatch__name { font-size: 12px; font-weight: 600; }
+  .swatch__hex { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .swatch__role { font-size: 11px; color: var(--muted-2); margin-top: -4px; }
+
+  /* Sizing demo */
+  .size-row {
+    display: flex; align-items: flex-end; gap: 32px; padding: 32px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  }
+  .size-item { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .size-label { font-size: 11px; color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; }
+  .size-label strong { display: block; color: var(--fg); font-size: 12px; font-weight: 600; }
+
+  /* Don't card */
+  .dont {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .dont__head {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; color: #fb7185; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .dont__head::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #fb7185; }
+  .dont__demo { height: 120px; display: flex; align-items: center; justify-content: center; background: var(--bg-elev); border-radius: 8px; }
+  .dont__why { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* In context — sidebar */
+  .ctx-frame {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 320px;
+  }
+  .ctx-frame--light { background: #f7f9fb; border-color: #d9dfe5; color: #1a1f24; }
+  .ctx-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    background: var(--card-2);
+    border: 1px solid var(--border-2);
+    border-radius: 10px;
+  }
+  .ctx-frame--light .ctx-row { background: #fff; border-color: #e6eaef; }
+  .ctx-meta-name { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+  .ctx-meta-name .accent { color: var(--primary); }
+  .ctx-meta-sub { font-size: 10px; color: var(--muted-2); letter-spacing: 0.12em; text-transform: uppercase; }
+  .ctx-frame--light .ctx-meta-sub { color: #8b949e; }
+
+  /* Browser tab demo */
+  .tab {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px 8px 12px;
+    background: var(--card-2); border: 1px solid var(--border-2);
+    border-radius: 8px 8px 0 0; max-width: 220px;
+    font-size: 12px; color: var(--fg);
+  }
+  .tab__title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Type specimen */
+  .type-row {
+    display: flex; align-items: baseline; gap: 24px; padding: 24px 28px;
+    background: var(--card); border: 1px solid var(--border);
+    border-bottom: none;
+  }
+  .type-row:first-child { border-radius: 12px 12px 0 0; }
+  .type-row:last-child { border-bottom: 1px solid var(--border); border-radius: 0 0 12px 12px; }
+  .type-row + .type-row { border-top: none; }
+  .type-row__sample { flex: 1; }
+  .type-row__meta { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 220px; text-align: right; }
+  .type-row__meta strong { color: var(--fg); font-weight: 500; display: block; }
+
+  code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px; padding: 1px 5px;
+    background: rgba(255,255,255,0.06); border-radius: 3px;
+    color: var(--pale);
+  }
+
+  /* Footer */
+  .footer { margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--muted-2); font-size: 11px; display: flex; justify-content: space-between; }
+
+  /* Toggle */
+  .theme-toggle {
+    position: fixed; top: 24px; right: 24px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 999px; padding: 4px;
+    display: flex; gap: 2px; z-index: 10;
+  }
+  .theme-toggle button {
+    background: transparent; border: 0; color: var(--muted);
+    padding: 6px 14px; font-size: 11px; font-weight: 500;
+    border-radius: 999px; cursor: pointer; font-family: inherit;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .theme-toggle button.is-active { background: var(--bg-elev); color: var(--fg); }
+
+  body[data-theme="light"] {
+    --bg: #fafbfc; --bg-elev: #ffffff; --card: #ffffff; --card-2: #f7f9fb;
+    --border: #e6eaef; --border-2: #d9dfe5;
+    --fg: #1a1f24; --muted: #6b7682; --muted-2: #9aa3ad;
+  }
+  body[data-theme="light"] .swatch__hex { color: #6b7682; }
+  body[data-theme="light"] code { background: rgba(0,0,0,0.05); color: var(--deep); }
+</style>
+</head>
+<body data-theme="dark">
+
+<div class="theme-toggle" role="tablist">
+  <button data-theme-set="dark" class="is-active">Dark</button>
+  <button data-theme-set="light">Light</button>
+</div>
+
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="eyebrow">Brand · v1.0 · May 2026</div>
+    <h1 class="h1">Data<span class="accent">Atlas</span></h1>
+    <p class="lede">A stacked-chevron mark for the Jira-native governance platform. Three upward chevrons, cool→warm. The pale top reads as "surface," the cyan middle as "core," the violet base as "depth" — a small visual story about layered data.</p>
+  </div>
+
+  <!-- Hero lockup -->
+  <div class="hero">
+    <div class="hero__display">
+      <div class="lockup-stacked">
+        <div class="tile" style="width: 96px; height: 96px; border-radius: 22px;">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+            <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+            <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+            <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+          </svg>
+        </div>
+        <div class="wordmark" style="font-size: 28px;">Data<span class="accent">Atlas</span></div>
+      </div>
+    </div>
+    <div class="hero__meta">
+      <h3>The mark</h3>
+      <p>Three stroked chevrons, vertically stacked. <code>pale → cyan → violet</code> top-to-bottom. Sits inside a tonal tile — neutral on both light and dark surfaces.</p>
+      <dl class="kv">
+        <dt>Geometry</dt><dd>3 paths, M5 9 / 14 / 19</dd>
+        <dt>Stroke</dt><dd>2.4 px, round caps + joins</dd>
+        <dt>Tile radius</dt><dd>22% of tile size</dd>
+        <dt>Wordmark</dt><dd>Inter Tight 600, –0.02em tracking</dd>
+        <dt>Atlas in</dt><dd><code>#22d3ee</code> (cyan-400)</dd>
+      </dl>
+    </div>
+  </div>
+
+  <!-- 1. Primary mark -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">01</div>
+      <h2 class="section-title">Primary mark</h2>
+      <div class="section-sub">The default lockup, on dark and light tiles</div>
+    </div>
+    <div class="grid grid--4">
+      <div class="card">
+        <div class="preview">
+          <div class="tile" style="width: 80px; height: 80px; border-radius: 18px;">
+            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+              <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+              <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+              <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+            </svg>
+          </div>
+        </div>
+        <div class="label"><strong>Mark · 80px · dark tile</strong>Primary use on dark surfaces</div>
+      </div>
+
+      <div class="card card--light">
+        <div class="preview">
+          <div class="tile tile--light" style="width: 80px; height: 80px; border-radius: 18px;">
+            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+              <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+              <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+              <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+            </svg>
+          </div>
+        </div>
+        <div class="label"><strong>Mark · 80px · light tile</strong>Primary use on light surfaces</div>
+      </div>
+
+      <div class="card">
+        <div class="preview">
+          <div class="lockup">
+            <div class="tile" style="width: 40px; height: 40px; border-radius: 10px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+                <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+                <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+                <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+              </svg>
+            </div>
+            <div class="wordmark" style="font-size: 20px;">Data<span class="accent">Atlas</span></div>
+          </div>
+        </div>
+        <div class="label"><strong>Horizontal lockup</strong>Default. 10px gap, vertical center.</div>
+      </div>
+
+      <div class="card card--light">
+        <div class="preview">
+          <div class="lockup">
+            <div class="tile tile--light" style="width: 40px; height: 40px; border-radius: 10px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+                <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+                <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+                <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+              </svg>
+            </div>
+            <div class="wordmark" style="font-size: 20px;">Data<span class="accent">Atlas</span></div>
+          </div>
+        </div>
+        <div class="label"><strong>Horizontal · on light</strong>Same chevron colors, light tile</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Lockups -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">02</div>
+      <h2 class="section-title">Lockups</h2>
+      <div class="section-sub">Horizontal, stacked, mark-only, wordmark-only</div>
+    </div>
+    <div class="grid grid--4">
+      <div class="card">
+        <div class="preview">
+          <div class="lockup">
+            <div class="tile" style="width: 36px; height: 36px; border-radius: 9px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+                <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+                <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+                <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+              </svg>
+            </div>
+            <div class="wordmark" style="font-size: 18px;">Data<span class="accent">Atlas</span></div>
+          </div>
+        </div>
+        <div class="label"><strong>Horizontal</strong>Apps, headers, footers</div>
+      </div>
+
+      <div class="card">
+        <div class="preview">
+          <div class="lockup-stacked">
+            <div class="tile" style="width: 56px; height: 56px; border-radius: 13px;">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+                <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+                <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+                <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+              </svg>
+            </div>
+            <div class="wordmark" style="font-size: 16px;">Data<span class="accent">Atlas</span></div>
+          </div>
+        </div>
+        <div class="label"><strong>Stacked</strong>Splash screens, marketing</div>
+      </div>
+
+      <div class="card">
+        <div class="preview">
+          <div class="tile" style="width: 64px; height: 64px; border-radius: 14px;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+              <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+              <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+              <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+            </svg>
+          </div>
+        </div>
+        <div class="label"><strong>Mark only</strong>App icon, favicon, social avatar</div>
+      </div>
+
+      <div class="card">
+        <div class="preview">
+          <div class="wordmark" style="font-size: 24px;">Data<span class="accent">Atlas</span></div>
+        </div>
+        <div class="label"><strong>Wordmark only</strong>Inline text, &lt;16px contexts</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Color -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">03</div>
+      <h2 class="section-title">Color tokens</h2>
+      <div class="section-sub">The brand gesture — pale → cyan → violet — applies anywhere</div>
+    </div>
+    <div class="grid grid--auto">
+      <div class="swatch">
+        <div class="swatch__chip" style="background: #a5f3fc;"></div>
+        <div>
+          <div class="swatch__name">Pale</div>
+          <div class="swatch__hex">#a5f3fc · cyan-200</div>
+        </div>
+        <div class="swatch__role">Top chevron · highlights · success bg</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch__chip" style="background: #22d3ee;"></div>
+        <div>
+          <div class="swatch__name">Primary</div>
+          <div class="swatch__hex">#22d3ee · cyan-400</div>
+        </div>
+        <div class="swatch__role">Middle chevron · brand · "Atlas" wordmark</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch__chip" style="background: #38bdf8;"></div>
+        <div>
+          <div class="swatch__name">Accent</div>
+          <div class="swatch__hex">#38bdf8 · sky-400</div>
+        </div>
+        <div class="swatch__role">Links · focus rings · secondary CTAs</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch__chip" style="background: #0e7490;"></div>
+        <div>
+          <div class="swatch__name">Deep</div>
+          <div class="swatch__hex">#0e7490 · cyan-700</div>
+        </div>
+        <div class="swatch__role">Pressed states · low-contrast text</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch__chip" style="background: #a78bfa;"></div>
+        <div>
+          <div class="swatch__name">Violet</div>
+          <div class="swatch__hex">#a78bfa · violet-400</div>
+        </div>
+        <div class="swatch__role">Bottom chevron · accent series</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch__chip" style="background: #7c3aed;"></div>
+        <div>
+          <div class="swatch__name">Violet Deep</div>
+          <div class="swatch__hex">#7c3aed · violet-600</div>
+        </div>
+        <div class="swatch__role">Pressed violet · category accents</div>
+      </div>
+    </div>
+
+    <!-- Brand gradient bar -->
+    <div style="margin-top: 24px; padding: 20px 24px; background: var(--card); border: 1px solid var(--border); border-radius: 12px;">
+      <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; font-weight: 600;">Brand gradient</div>
+      <div style="height: 24px; border-radius: 6px; background: linear-gradient(90deg, #a5f3fc 0%, #22d3ee 50%, #a78bfa 100%); margin-bottom: 8px;"></div>
+      <div style="font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace;">linear-gradient(90deg, #a5f3fc 0%, #22d3ee 50%, #a78bfa 100%)</div>
+    </div>
+  </div>
+
+  <!-- 4. Typography -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">04</div>
+      <h2 class="section-title">Typography</h2>
+      <div class="section-sub">Inter Tight — open-licensed, free, multi-script</div>
+    </div>
+    <div>
+      <div class="type-row">
+        <div class="type-row__sample" style="font-family: 'Inter Tight'; font-size: 56px; font-weight: 700; letter-spacing: -0.025em; line-height: 1;">Data<span style="color: var(--primary);">Atlas</span></div>
+        <div class="type-row__meta"><strong>Display · 700</strong>56px · –0.025em · for hero/marketing</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__sample" style="font-family: 'Inter Tight'; font-size: 32px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1;">Data<span style="color: var(--primary);">Atlas</span></div>
+        <div class="type-row__meta"><strong>Heading · 600</strong>32px · –0.02em · page titles</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__sample" style="font-family: 'Inter Tight'; font-size: 18px; font-weight: 600; letter-spacing: -0.015em;">Data<span style="color: var(--primary);">Atlas</span></div>
+        <div class="type-row__meta"><strong>Lockup · 600</strong>18px · –0.015em · in-product header</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__sample" style="font-family: 'Inter Tight'; font-size: 14px; font-weight: 600; letter-spacing: -0.01em;">Data<span style="color: var(--primary);">Atlas</span></div>
+        <div class="type-row__meta"><strong>Sidebar · 600</strong>14px · –0.01em · nav row</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row__sample" style="font-family: 'Inter Tight'; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;">DATA<span style="color: var(--primary);">ATLAS</span></div>
+        <div class="type-row__meta"><strong>Caps · 600</strong>11px · +0.1em · breadcrumb / kicker</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Sizes -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">05</div>
+      <h2 class="section-title">Sizing</h2>
+      <div class="section-sub">Stroke stays 2.4 — round caps preserve the silhouette</div>
+    </div>
+    <div class="size-row">
+      <div class="size-item">
+        <div class="tile" style="width: 16px; height: 16px; border-radius: 4px;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+            <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+            <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+            <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+          </svg>
+        </div>
+        <div class="size-label"><strong>16</strong>Inline · favicon</div>
+      </div>
+      <div class="size-item">
+        <div class="tile" style="width: 20px; height: 20px; border-radius: 5px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+            <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+            <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+            <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+          </svg>
+        </div>
+        <div class="size-label"><strong>20</strong>Buttons / chips</div>
+      </div>
+      <div class="size-item">
+        <div class="tile" style="width: 28px; height: 28px; border-radius: 7px;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+            <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+            <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+            <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+          </svg>
+        </div>
+        <div class="size-label"><strong>28</strong>Sidebar · nav</div>
+      </div>
+      <div class="size-item">
+        <div class="tile" style="width: 48px; height: 48px; border-radius: 11px;">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+            <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+            <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+            <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+          </svg>
+        </div>
+        <div class="size-label"><strong>48</strong>App headers</div>
+      </div>
+      <div class="size-item">
+        <div class="tile" style="width: 80px; height: 80px; border-radius: 18px;">
+          <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+            <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+            <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+            <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+          </svg>
+        </div>
+        <div class="size-label"><strong>80</strong>Splash · onboarding</div>
+      </div>
+      <div class="size-item">
+        <div class="tile" style="width: 128px; height: 128px; border-radius: 28px;">
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+            <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+            <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+            <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+          </svg>
+        </div>
+        <div class="size-label"><strong>128</strong>Marketing · OG image</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Clear space -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">06</div>
+      <h2 class="section-title">Clear space &amp; minimum size</h2>
+      <div class="section-sub">Half the tile-height of breathing room on all sides</div>
+    </div>
+    <div class="grid grid--3">
+      <div class="card">
+        <div class="preview">
+          <div style="position: relative; padding: 32px;">
+            <!-- guide rectangle -->
+            <div style="position: absolute; inset: 0; border: 1px dashed rgba(34,211,238,0.4); border-radius: 18px;"></div>
+            <div style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 9px; color: var(--primary); font-family: monospace;">x/2</div>
+            <div style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 9px; color: var(--primary); font-family: monospace;">x/2</div>
+            <div style="position: absolute; top: 8px; left: 50%; transform: translateX(-50%); font-size: 9px; color: var(--primary); font-family: monospace;">x/2</div>
+            <div style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); font-size: 9px; color: var(--primary); font-family: monospace;">x/2</div>
+            <div class="tile" style="width: 64px; height: 64px; border-radius: 14px;">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+                <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+                <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+                <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="label"><strong>Clear space = ½ x</strong>x = mark height</div>
+      </div>
+
+      <div class="card">
+        <div class="preview">
+          <div style="display: flex; align-items: end; gap: 8px;">
+            <div class="tile" style="width: 16px; height: 16px; border-radius: 4px;">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+                <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+                <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+                <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+              </svg>
+            </div>
+            <div style="font-size: 10px; color: var(--muted-2); padding-bottom: 2px;">↓ minimum</div>
+            <div style="position: relative; opacity: 0.4;">
+              <div class="tile" style="width: 12px; height: 12px; border-radius: 3px;">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+                  <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+                  <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+                  <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+                </svg>
+              </div>
+              <div style="position: absolute; inset: -3px; border: 1px solid #fb7185; border-radius: 5px;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="label"><strong>Minimum size · 16px</strong>Below 16, fall back to wordmark</div>
+      </div>
+
+      <div class="card">
+        <div class="preview" style="flex-direction: column; gap: 8px;">
+          <div class="wordmark" style="font-size: 14px;">Data<span class="accent">Atlas</span></div>
+          <div style="font-size: 10px; color: var(--muted-2);">↓ at &lt; 14px</div>
+          <div class="wordmark" style="font-size: 11px;">Data<span class="accent">Atlas</span></div>
+        </div>
+        <div class="label"><strong>Wordmark fallback</strong>Use wordmark-only at small sizes</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. In context -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">07</div>
+      <h2 class="section-title">In context</h2>
+      <div class="section-sub">Sidebar · browser tab · button · social avatar</div>
+    </div>
+    <div class="grid grid--auto">
+      <!-- Dark sidebar row -->
+      <div class="card">
+        <div class="preview" style="justify-content: flex-start;">
+          <div class="ctx-frame">
+            <div class="ctx-row">
+              <div class="tile" style="width: 28px; height: 28px; border-radius: 7px;">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+                  <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+                  <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+                  <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+                </svg>
+              </div>
+              <div>
+                <div class="ctx-meta-name">Data<span class="accent">Atlas</span></div>
+                <div class="ctx-meta-sub">Governance · v1</div>
+              </div>
+            </div>
+            <div style="font-size: 11px; color: var(--muted-2); padding: 0 4px;">↑ Jira sidebar — workspace header</div>
+          </div>
+        </div>
+        <div class="label"><strong>Jira sidebar · dark</strong>28px tile, mark + wordmark</div>
+      </div>
+
+      <!-- Light sidebar row -->
+      <div class="card card--light">
+        <div class="preview" style="justify-content: flex-start;">
+          <div class="ctx-frame ctx-frame--light">
+            <div class="ctx-row">
+              <div class="tile tile--light" style="width: 28px; height: 28px; border-radius: 7px;">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+                  <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+                  <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+                  <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+                </svg>
+              </div>
+              <div>
+                <div class="ctx-meta-name">Data<span class="accent">Atlas</span></div>
+                <div class="ctx-meta-sub" style="color: #8b949e;">Governance · v1</div>
+              </div>
+            </div>
+            <div style="font-size: 11px; color: #9aa3ad; padding: 0 4px;">↑ Jira sidebar — light theme</div>
+          </div>
+        </div>
+        <div class="label"><strong>Jira sidebar · light</strong>Same chevron strokes, light tile</div>
+      </div>
+
+      <!-- Browser tab -->
+      <div class="card">
+        <div class="preview" style="flex-direction: column; gap: 12px;">
+          <div class="tab">
+            <div class="tile" style="width: 14px; height: 14px; border-radius: 3px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6">
+                <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+                <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+                <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+              </svg>
+            </div>
+            <div class="tab__title">DataAtlas — Register</div>
+          </div>
+        </div>
+        <div class="label"><strong>Browser tab</strong>16px favicon</div>
+      </div>
+
+      <!-- Button -->
+      <div class="card">
+        <div class="preview">
+          <button style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; background: linear-gradient(135deg, #22d3ee 0%, #38bdf8 100%); color: #001418; border: 0; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 600; letter-spacing: -0.01em; cursor: pointer;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6">
+              <path d="M5 9l7-5 7 5"  stroke="#001418"/>
+              <path d="M5 14l7-5 7 5" stroke="#001418"/>
+              <path d="M5 19l7-5 7 5" stroke="#001418"/>
+            </svg>
+            Open DataAtlas
+          </button>
+        </div>
+        <div class="label"><strong>Branded CTA</strong>Mark on cyan gradient button</div>
+      </div>
+
+      <!-- App icon / social avatar -->
+      <div class="card">
+        <div class="preview">
+          <div class="tile" style="width: 72px; height: 72px; border-radius: 16px;">
+            <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+              <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+              <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+              <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+            </svg>
+          </div>
+        </div>
+        <div class="label"><strong>App icon · 72px</strong>Mark only, larger tile radius</div>
+      </div>
+
+      <!-- Onboarding hero -->
+      <div class="card">
+        <div class="preview" style="flex-direction: column; gap: 14px; padding: 16px 0;">
+          <div class="tile" style="width: 64px; height: 64px; border-radius: 14px;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+              <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+              <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+              <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+            </svg>
+          </div>
+          <div style="text-align: center;">
+            <div class="wordmark" style="font-size: 18px;">Data<span class="accent">Atlas</span></div>
+            <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">Set up your workspace →</div>
+          </div>
+        </div>
+        <div class="label"><strong>Onboarding splash</strong>Stacked lockup, centered</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Monochrome -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">08</div>
+      <h2 class="section-title">Monochrome</h2>
+      <div class="section-sub">When the cool→warm palette can't be honored</div>
+    </div>
+    <div class="grid grid--4">
+      <div class="card">
+        <div class="preview">
+          <div class="tile" style="width: 64px; height: 64px; border-radius: 14px;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+              <path d="M5 9l7-5 7 5" opacity="0.55"/>
+              <path d="M5 14l7-5 7 5" opacity="0.78"/>
+              <path d="M5 19l7-5 7 5"/>
+            </svg>
+          </div>
+        </div>
+        <div class="label"><strong>Mono · white-on-dark</strong>Stepped opacity preserves stack</div>
+      </div>
+      <div class="card card--light">
+        <div class="preview">
+          <div class="tile tile--light" style="width: 64px; height: 64px; border-radius: 14px;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1a1f24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+              <path d="M5 9l7-5 7 5" opacity="0.45"/>
+              <path d="M5 14l7-5 7 5" opacity="0.7"/>
+              <path d="M5 19l7-5 7 5"/>
+            </svg>
+          </div>
+        </div>
+        <div class="label"><strong>Mono · black-on-light</strong>Print, fax, single-color outputs</div>
+      </div>
+      <div class="card">
+        <div class="preview">
+          <div style="background: #001418; border-radius: 14px; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+              <path d="M5 9l7-5 7 5"/>
+              <path d="M5 14l7-5 7 5"/>
+              <path d="M5 19l7-5 7 5"/>
+            </svg>
+          </div>
+        </div>
+        <div class="label"><strong>Mono · solid white</strong>Last-resort flat treatment</div>
+      </div>
+      <div class="card card--light">
+        <div class="preview">
+          <div style="background: #fff; border: 1px solid #d9dfe5; border-radius: 14px; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1a1f24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+              <path d="M5 9l7-5 7 5"/>
+              <path d="M5 14l7-5 7 5"/>
+              <path d="M5 19l7-5 7 5"/>
+            </svg>
+          </div>
+        </div>
+        <div class="label"><strong>Mono · solid black</strong>Embossing, single-ink print</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Don'ts -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">09</div>
+      <h2 class="section-title">Don'ts</h2>
+      <div class="section-sub">The mark is system-built — don't redraw it</div>
+    </div>
+    <div class="grid grid--3">
+      <div class="dont">
+        <div class="dont__head">Don't · fill</div>
+        <div class="dont__demo">
+          <div class="tile" style="width: 64px; height: 64px; border-radius: 14px;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="#22d3ee" stroke="#22d3ee" stroke-linejoin="round" stroke-width="0.6">
+              <path d="M5 9l7-5 7 5l-1.4 1L12 5.7 6.4 10z"/>
+              <path d="M5 14l7-5 7 5l-1.4 1L12 10.7 6.4 15z"/>
+              <path d="M5 19l7-5 7 5l-1.4 1L12 15.7 6.4 20z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="dont__why">The chevrons are <strong style="color: var(--fg);">stroked</strong>. Don't fill the paths or thicken them.</div>
+      </div>
+      <div class="dont">
+        <div class="dont__head">Don't · invert order</div>
+        <div class="dont__demo">
+          <div class="tile" style="width: 64px; height: 64px; border-radius: 14px;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+              <path d="M5 9l7-5 7 5"  stroke="#a78bfa"/>
+              <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+              <path d="M5 19l7-5 7 5" stroke="#a5f3fc"/>
+            </svg>
+          </div>
+        </div>
+        <div class="dont__why">Pale → cyan → violet, top to bottom. Inverting reads as "warning" or error.</div>
+      </div>
+      <div class="dont">
+        <div class="dont__head">Don't · saturated tile</div>
+        <div class="dont__demo">
+          <div style="background: #7c3aed; border-radius: 14px; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+              <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+              <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+              <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+            </svg>
+          </div>
+        </div>
+        <div class="dont__why">Tile stays <strong style="color: var(--fg);">tonal/neutral</strong>. Don't put the mark on a brand color.</div>
+      </div>
+      <div class="dont">
+        <div class="dont__head">Don't · stretch</div>
+        <div class="dont__demo">
+          <div class="tile" style="width: 96px; height: 48px; border-radius: 10px;">
+            <svg width="64" height="32" viewBox="0 0 24 24" fill="none" preserveAspectRatio="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+              <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+              <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+              <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+            </svg>
+          </div>
+        </div>
+        <div class="dont__why">Tile is always <strong style="color: var(--fg);">square</strong>. Don't crop, stretch, or letterbox.</div>
+      </div>
+      <div class="dont">
+        <div class="dont__head">Don't · shadow</div>
+        <div class="dont__demo">
+          <div class="tile" style="width: 64px; height: 64px; border-radius: 14px; box-shadow: 0 0 24px #22d3ee, 0 8px 16px rgba(34,211,238,0.5);">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+              <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+              <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+              <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+            </svg>
+          </div>
+        </div>
+        <div class="dont__why">No glows, drop shadows, bevels, or 3D effects on the mark or tile.</div>
+      </div>
+      <div class="dont">
+        <div class="dont__head">Don't · decorate</div>
+        <div class="dont__demo">
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <svg width="80" height="14" viewBox="0 0 80 14" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+              <path d="M3 9l5-3 5 3M16 9l5-3 5 3M29 9l5-3 5 3M42 9l5-3 5 3M55 9l5-3 5 3M68 9l5-3 5 3" stroke="#22d3ee"/>
+            </svg>
+            <div style="font-size: 9px; color: var(--muted-2);">section break</div>
+          </div>
+        </div>
+        <div class="dont__why">The chevron paths are a <strong style="color: var(--fg);">brand mark</strong>. Don't tile, repeat, or use as a divider.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. Code snippets -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-num">10</div>
+      <h2 class="section-title">Code snippets</h2>
+      <div class="section-sub">Copy-paste ready</div>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div class="card" style="align-items: stretch; padding: 0;">
+        <div style="padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600;">SVG · the mark</div>
+        <pre style="margin: 0; padding: 18px; font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.55; color: var(--pale); overflow-x: auto;"><code style="background: none; color: inherit; padding: 0;">&lt;svg viewBox="0 0 24 24" fill="none"
+     stroke-width="2.4"
+     stroke-linecap="round"
+     stroke-linejoin="round"&gt;
+  &lt;path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/&gt;
+  &lt;path d="M5 14l7-5 7 5" stroke="#22d3ee"/&gt;
+  &lt;path d="M5 19l7-5 7 5" stroke="#a78bfa"/&gt;
+&lt;/svg&gt;</code></pre>
+      </div>
+      <div class="card" style="align-items: stretch; padding: 0;">
+        <div style="padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600;">CSS · tokens</div>
+        <pre style="margin: 0; padding: 18px; font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.55; color: var(--pale); overflow-x: auto;"><code style="background: none; color: inherit; padding: 0;">:root {
+  --pale:        #a5f3fc;
+  --primary:     #22d3ee;
+  --accent:      #38bdf8;
+  --deep:        #0e7490;
+  --violet:      #a78bfa;
+  --violet-deep: #7c3aed;
+
+  --tile-bg:     linear-gradient(180deg,
+                   #1a2329, #0f1418);
+  --tile-border: #1f2c34;
+}</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>DataAtlas brand · v1.0 · May 2026</div>
+    <div>Original mark · No Atlassian shape DNA · Inter Tight wordmark</div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('[data-theme-set]').forEach(b => {
+    b.addEventListener('click', () => {
+      const t = b.dataset.themeSet;
+      document.body.setAttribute('data-theme', t);
+      document.querySelectorAll('[data-theme-set]').forEach(x => x.classList.toggle('is-active', x.dataset.themeSet === t));
+    });
+  });
+</script>
+
+</body>
+</html>

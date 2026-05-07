@@ -1,0 +1,1084 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Data Atlas — Data governance, built into Jira</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ── Reset ───────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; text-decoration: none; }
+
+/* ── Brand tokens (theme-independent) ───────────────────── */
+:root {
+  --pale:        #a5f3fc;
+  --primary:     #22d3ee;
+  --accent:      #38bdf8;
+  --deep:        #0e7490;
+  --violet:      #a78bfa;
+  --violet-deep: #7c3aed;
+  --brand-grad:  linear-gradient(90deg, #a5f3fc 0%, #22d3ee 50%, #a78bfa 100%);
+  --ff: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   20px;
+  --radius-xl:   28px;
+  --section-pad: clamp(80px, 10vw, 140px) clamp(20px, 5vw, 80px);
+}
+
+/* ── Dark theme (default) ───────────────────────────────── */
+[data-theme="dark"] {
+  --bg:           #080a0d;
+  --bg-elev:      #0d1117;
+  --bg-section:   #0f1318;
+  --card:         #131820;
+  --card-2:       #161d26;
+  --border:       #1e2530;
+  --border-2:     #252e3a;
+  --fg:           #e8eaed;
+  --muted:        #8b949e;
+  --muted-2:      #5a6370;
+  --tile-bg:      linear-gradient(180deg, #1a2329, #0f1418);
+  --tile-border:  #1f2c34;
+  --nav-blur-bg:  rgba(8,10,13,0.88);
+  --shadow-hero:  0 32px 80px rgba(0,0,0,0.55), 0 8px 24px rgba(0,0,0,0.35);
+  --shadow-card:  0 20px 60px rgba(0,0,0,0.45);
+  --pain-before:  #fb7185;
+  --pain-after:   #4ade80;
+  color-scheme: dark;
+}
+
+/* ── Light theme ────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg:           #f5f7fa;
+  --bg-elev:      #ffffff;
+  --bg-section:   #eef1f6;
+  --card:         #ffffff;
+  --card-2:       #f0f3f8;
+  --border:       #dde2ea;
+  --border-2:     #c8d0db;
+  --fg:           #111418;
+  --muted:        #5a6370;
+  --muted-2:      #8b949e;
+  --tile-bg:      linear-gradient(180deg, #f0f4f8, #e4eaf2);
+  --tile-border:  #c8d0db;
+  --nav-blur-bg:  rgba(245,247,250,0.92);
+  --shadow-hero:  0 24px 60px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-card:  0 12px 40px rgba(0,0,0,0.1);
+  --pain-before:  #dc2626;
+  --pain-after:   #16a34a;
+  color-scheme: light;
+}
+
+/* ── Base ───────────────────────────────────────────────── */
+body {
+  font-family: var(--ff);
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ── Screenshot swap: show/hide by theme ───────────────── */
+.img-dark  { display: block !important; }
+.img-light { display: none  !important; }
+[data-theme="light"] .img-dark  { display: none  !important; }
+[data-theme="light"] .img-light { display: block !important; }
+
+/* ── NAV ────────────────────────────────────────────────── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 0 clamp(20px, 5vw, 64px);
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid transparent;
+  transition: background 0.3s, border-color 0.3s, backdrop-filter 0.3s;
+}
+.nav.scrolled {
+  background: var(--nav-blur-bg);
+  border-color: var(--border);
+  backdrop-filter: blur(16px);
+}
+.nav__logo { display: flex; align-items: center; gap: 10px; }
+.nav__tile {
+  width: 30px; height: 30px; border-radius: 7px;
+  background: var(--tile-bg);
+  border: 1px solid var(--tile-border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.nav__wordmark {
+  font-size: 17px; font-weight: 600; letter-spacing: -0.02em; line-height: 1;
+}
+.nav__wordmark span { color: var(--primary); }
+.nav__links {
+  display: flex; align-items: center; gap: 28px;
+  list-style: none; white-space: nowrap;
+}
+.nav__links a {
+  font-size: 14px; font-weight: 500; color: var(--muted);
+  transition: color 0.2s; white-space: nowrap;
+}
+.nav__links a:hover { color: var(--fg); }
+.nav__right { display: flex; align-items: center; gap: 10px; }
+
+/* ── Theme toggle ───────────────────────────────────────── */
+.theme-toggle {
+  display: flex; align-items: center;
+  background: var(--card); border: 1px solid var(--border-2);
+  border-radius: 999px; padding: 3px; gap: 2px;
+}
+.theme-toggle__btn {
+  width: 30px; height: 26px; border-radius: 999px;
+  background: transparent; border: 0;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--muted);
+  transition: background 0.2s, color 0.2s;
+}
+.theme-toggle__btn.is-active {
+  background: var(--bg-section); color: var(--fg);
+}
+.theme-toggle__btn svg { pointer-events: none; }
+
+/* ── Buttons ────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 20px; border-radius: var(--radius-sm);
+  font-family: var(--ff); font-size: 14px; font-weight: 600;
+  letter-spacing: -0.01em; cursor: pointer; border: 0;
+  transition: opacity 0.15s, transform 0.15s;
+  white-space: nowrap;
+}
+.btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn--primary { background: var(--primary); color: #001418; }
+.btn--ghost {
+  background: transparent; color: var(--muted);
+  border: 1px solid var(--border-2);
+}
+.btn--ghost:hover { color: var(--fg); border-color: var(--fg); opacity: 1; }
+.btn--lg { padding: 13px 28px; font-size: 15px; border-radius: 10px; }
+.nav__mobile { display: none; cursor: pointer; color: var(--muted); background: none; border: 0; }
+
+/* ── Layout ─────────────────────────────────────────────── */
+.section { padding: var(--section-pad); }
+.section--a { background: var(--bg); }
+.section--b { background: var(--bg-section); }
+.inner        { max-width: 1160px; margin: 0 auto; }
+.inner--narrow{ max-width: 780px;  margin: 0 auto; }
+
+/* ── Eyebrow ────────────────────────────────────────────── */
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--primary); margin-bottom: 16px;
+}
+.eyebrow::before {
+  content: ''; display: block; width: 18px; height: 2px;
+  background: var(--brand-grad); border-radius: 2px;
+}
+
+/* ── Hero ────────────────────────────────────────────────── */
+.hero {
+  padding: clamp(120px, 14vw, 180px) clamp(20px, 5vw, 80px) clamp(80px, 10vw, 120px);
+  position: relative; overflow: hidden;
+}
+.hero__glow {
+  position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+  width: 900px; height: 600px;
+  background: radial-gradient(ellipse at center,
+    rgba(34,211,238,0.07) 0%, rgba(167,139,250,0.04) 50%, transparent 75%);
+  pointer-events: none;
+}
+[data-theme="light"] .hero__glow {
+  background: radial-gradient(ellipse at center,
+    rgba(34,211,238,0.1) 0%, rgba(167,139,250,0.06) 50%, transparent 75%);
+}
+.hero__inner {
+  max-width: 1160px; margin: 0 auto;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; gap: 28px;
+}
+.hero__badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: 999px;
+  border: 1px solid var(--border-2); background: var(--card);
+  font-size: 12px; font-weight: 500; color: var(--muted);
+  white-space: nowrap;
+}
+.hero__badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); flex-shrink: 0; }
+.hero__badge strong { color: var(--primary); }
+.hero__h1 {
+  font-size: clamp(40px, 6vw, 72px); font-weight: 700;
+  letter-spacing: -0.03em; line-height: 1.04; text-wrap: balance;
+}
+.hero__h1 span { color: var(--primary); }
+.hero__sub {
+  font-size: clamp(16px, 2vw, 19px); color: var(--muted);
+  max-width: 580px; line-height: 1.55; text-wrap: pretty;
+}
+.hero__actions {
+  display: flex; align-items: center; gap: 14px;
+  flex-wrap: wrap; justify-content: center;
+}
+.hero__screenshot {
+  width: 100%; max-width: 1040px; margin-top: 32px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-2); overflow: hidden;
+  box-shadow: var(--shadow-hero);
+  position: relative;
+  transition: box-shadow 0.4s;
+}
+.hero__screenshot img { width: 100%; height: auto; display: block; }
+.hero__screenshot::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 70%, var(--bg) 100%);
+  pointer-events: none; z-index: 1;
+  transition: background 0.3s;
+}
+
+/* ── Logo strip ─────────────────────────────────────────── */
+.logostrip {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 28px clamp(20px,5vw,80px);
+  background: var(--bg);
+}
+.logostrip__inner {
+  max-width: 1160px; margin: 0 auto;
+  display: flex; align-items: center; gap: 32px; flex-wrap: wrap; justify-content: center;
+}
+.logostrip__label { font-size: 12px; color: var(--muted-2); white-space: nowrap; font-weight: 500; letter-spacing: 0.04em; }
+.logostrip__pills { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.logostrip__pill {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 14px; border-radius: 999px;
+  border: 1px solid var(--border-2); background: var(--card);
+  font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: -0.01em;
+}
+.logostrip__pill-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+/* ── Feature grid ───────────────────────────────────────── */
+.feature-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2px; background: var(--border);
+  border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+}
+.feature-card {
+  background: var(--bg-section); padding: 32px 28px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.feature-card__icon {
+  width: 36px; height: 36px; border-radius: 9px; background: var(--card);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; border: 1px solid var(--border-2);
+}
+.feature-card h3 { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+.feature-card p { font-size: 13px; color: var(--muted); line-height: 1.55; text-wrap: pretty; }
+
+/* ── Split sections ─────────────────────────────────────── */
+.split {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: clamp(40px, 6vw, 80px); align-items: center;
+}
+.split--rev { direction: rtl; }
+.split--rev > * { direction: ltr; }
+.split__copy { display: flex; flex-direction: column; gap: 20px; }
+.split__h2 {
+  font-size: clamp(26px, 3.5vw, 42px); font-weight: 700;
+  letter-spacing: -0.025em; line-height: 1.1; text-wrap: balance;
+}
+.split__body { font-size: 16px; color: var(--muted); line-height: 1.6; text-wrap: pretty; }
+.split__bullets { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.split__bullets li {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 14px; color: var(--muted); line-height: 1.5;
+}
+.split__bullets li::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--primary); flex-shrink: 0; margin-top: 6px;
+}
+.split__img {
+  border-radius: var(--radius-lg); overflow: hidden;
+  border: 1px solid var(--border-2); box-shadow: var(--shadow-card);
+  transition: box-shadow 0.3s;
+}
+.split__img img { width: 100%; height: auto; display: block; }
+
+/* ── Section header ─────────────────────────────────────── */
+.section-header { text-align: center; max-width: 680px; margin: 0 auto 56px; }
+.section-header h2 {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 700;
+  letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 16px; text-wrap: balance;
+}
+.section-header p { font-size: 17px; color: var(--muted); line-height: 1.6; text-wrap: pretty; }
+
+/* ── Gallery tabs ───────────────────────────────────────── */
+.gallery { display: flex; flex-direction: column; }
+.gallery__tabs {
+  display: flex; gap: 4px; flex-wrap: wrap; padding: 6px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); margin-bottom: 24px;
+}
+.gallery__tab {
+  flex: 1; min-width: 120px; padding: 9px 16px; border-radius: 10px;
+  font-family: var(--ff); font-size: 13px; font-weight: 500;
+  color: var(--muted); background: transparent; border: 0;
+  cursor: pointer; transition: background 0.2s, color 0.2s; text-align: center; white-space: nowrap;
+}
+.gallery__tab.is-active { background: var(--bg-section); color: var(--fg); box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+.gallery__panel { display: none; }
+.gallery__panel.is-active { display: block; animation: fadeIn 0.25s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
+.gallery__img {
+  border-radius: var(--radius-lg); overflow: hidden;
+  border: 1px solid var(--border-2); box-shadow: var(--shadow-card);
+}
+.gallery__img img { width: 100%; height: auto; display: block; }
+.gallery__caption { margin-top: 16px; font-size: 13px; color: var(--muted); text-align: center; line-height: 1.5; }
+
+/* ── Outcome grid ───────────────────────────────────────── */
+.outcome-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.outcome-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 28px 24px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.outcome-card__num {
+  font-size: 32px; font-weight: 700; letter-spacing: -0.03em;
+  line-height: 1; color: var(--primary); font-variant-numeric: tabular-nums;
+}
+.outcome-card h3 { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+.outcome-card p { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+/* ── Pain strip ─────────────────────────────────────────── */
+.pain-strip {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--border);
+  border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+}
+.pain-item { background: var(--bg-section); padding: 28px 24px; display: flex; flex-direction: column; gap: 8px; }
+.pain-item__label { font-size: 11px; color: var(--muted-2); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.pain-item__before { font-size: 14px; color: var(--pain-before); line-height: 1.45; font-style: italic; }
+.pain-item__after  { font-size: 14px; color: var(--pain-after);  line-height: 1.45; margin-top: 4px; }
+.pain-item__arrow  { font-size: 11px; color: var(--muted-2); margin: 2px 0; }
+
+/* ── FAQ ────────────────────────────────────────────────── */
+.faq__group { margin-bottom: 40px; }
+.faq__group-title {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--primary);
+  margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
+}
+.faq__item { border-bottom: 1px solid var(--border); }
+.faq__q {
+  width: 100%; background: none; border: 0; padding: 18px 0; text-align: left;
+  font-family: var(--ff); font-size: 15px; font-weight: 600; color: var(--fg);
+  cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+  gap: 16px; letter-spacing: -0.01em;
+}
+.faq__q:hover { color: var(--primary); }
+.faq__icon {
+  width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border-2);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: var(--muted); font-size: 14px;
+  transition: transform 0.25s, border-color 0.2s;
+}
+.faq__item.is-open .faq__icon { transform: rotate(45deg); border-color: var(--primary); color: var(--primary); }
+.faq__a {
+  max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.3s;
+  font-size: 14px; color: var(--muted); line-height: 1.65; text-wrap: pretty;
+}
+.faq__item.is-open .faq__a { max-height: 300px; padding-bottom: 20px; }
+
+/* ── CTA block ──────────────────────────────────────────── */
+.cta-block {
+  background: var(--card); border: 1px solid var(--border-2);
+  border-radius: var(--radius-xl);
+  padding: clamp(48px, 7vw, 96px) clamp(24px, 5vw, 80px);
+  text-align: center; position: relative; overflow: hidden;
+}
+.cta-block::before {
+  content: ''; position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 400px;
+  background: radial-gradient(ellipse, rgba(34,211,238,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-block h2 {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 700;
+  letter-spacing: -0.025em; line-height: 1.1;
+  max-width: 640px; margin: 0 auto 16px; text-wrap: balance;
+}
+.cta-block p { font-size: 17px; color: var(--muted); max-width: 480px; margin: 0 auto 36px; line-height: 1.55; text-wrap: pretty; }
+.cta-block__actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.atlassian-badge {
+  margin-top: 28px; display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border-2);
+  font-size: 12px; color: var(--muted-2); font-weight: 500;
+}
+
+/* ── Footer ─────────────────────────────────────────────── */
+.footer { padding: 48px clamp(20px, 5vw, 80px); border-top: 1px solid var(--border); background: var(--bg); }
+.footer__inner {
+  max-width: 1160px; margin: 0 auto;
+  display: grid; grid-template-columns: 1.5fr repeat(3, 1fr); gap: 40px;
+}
+.footer__brand { display: flex; flex-direction: column; gap: 14px; }
+.footer__brand p { font-size: 13px; color: var(--muted); line-height: 1.55; max-width: 260px; }
+.footer__col h4 { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-2); margin-bottom: 14px; }
+.footer__col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer__col ul a { font-size: 13px; color: var(--muted); transition: color 0.15s; }
+.footer__col ul a:hover { color: var(--fg); }
+.footer__bottom {
+  max-width: 1160px; margin: 32px auto 0; padding-top: 24px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; color: var(--muted-2); flex-wrap: wrap; gap: 12px;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .nav__links { display: none; }
+  .nav__mobile { display: flex; }
+  .split { grid-template-columns: 1fr; }
+  .split--rev { direction: ltr; }
+  .footer__inner { grid-template-columns: 1fr 1fr; }
+  .pain-strip { grid-template-columns: repeat(2, 1fr); }
+  .pain-item:nth-child(5),
+  .pain-item:nth-child(6) { grid-column: auto; }
+}
+@media (max-width: 600px) {
+  .gallery__tabs { flex-direction: column; }
+  .footer__inner { grid-template-columns: 1fr; }
+  .hero__actions { flex-direction: column; width: 100%; }
+  .hero__actions .btn { width: 100%; justify-content: center; }
+  .pain-strip { grid-template-columns: 1fr; }
+}
+
+/* ── Smooth theme transitions ───────────────────────────── */
+.section, .nav, .logostrip, .footer,
+.feature-card, .outcome-card, .pain-item,
+.split__img, .gallery__img, .cta-block,
+.hero__screenshot {
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s, color 0.3s;
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ───────────────────────────────────────────────── -->
+<nav class="nav" id="nav">
+  <a class="nav__logo" href="#">
+    <div class="nav__tile">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+        <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+        <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+        <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+      </svg>
+    </div>
+    <div class="nav__wordmark">Data<span>Atlas</span></div>
+  </a>
+  <ul class="nav__links">
+    <li><a href="#product">Product</a></li>
+    <li><a href="#glossary">Business Glossary</a></li>
+    <li><a href="#stewardship">Stewardship</a></li>
+    <li><a href="#lineage">Lineage</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <div class="nav__right">
+    <div class="theme-toggle" role="group" aria-label="Color theme">
+      <button class="theme-toggle__btn" id="btn-dark" title="Dark mode" aria-pressed="true">
+        <!-- Moon icon -->
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+      <button class="theme-toggle__btn" id="btn-light" title="Light mode" aria-pressed="false">
+        <!-- Sun icon -->
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+      </button>
+    </div>
+    <a href="#faq" class="btn btn--ghost" style="display:none;" id="nav-guide-btn">Product guide</a>
+    <a href="https://marketplace.atlassian.com" target="_blank" rel="noopener" class="btn btn--primary">Coming Soon</a>
+    <button class="nav__mobile" id="nav-mobile-btn" aria-label="Menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M3 6h18M3 12h18M3 18h18"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile menu (hidden by default) -->
+<div id="mobile-menu" style="display:none; position:fixed; top:60px; left:0; right:0; z-index:99; background:var(--card); border-bottom:1px solid var(--border); padding:20px clamp(20px,5vw,64px);">
+  <ul style="list-style:none; display:flex; flex-direction:column; gap:0;">
+    <li><a href="#product"     style="display:block; padding:14px 0; border-bottom:1px solid var(--border); font-size:16px; font-weight:500; color:var(--fg);">Product</a></li>
+    <li><a href="#glossary"    style="display:block; padding:14px 0; border-bottom:1px solid var(--border); font-size:16px; font-weight:500; color:var(--fg);">Business Glossary</a></li>
+    <li><a href="#stewardship" style="display:block; padding:14px 0; border-bottom:1px solid var(--border); font-size:16px; font-weight:500; color:var(--fg);">Stewardship</a></li>
+    <li><a href="#lineage"     style="display:block; padding:14px 0; border-bottom:1px solid var(--border); font-size:16px; font-weight:500; color:var(--fg);">Lineage</a></li>
+    <li><a href="#faq"         style="display:block; padding:14px 0; font-size:16px; font-weight:500; color:var(--fg);">FAQ</a></li>
+  </ul>
+  <a href="https://marketplace.atlassian.com" target="_blank" rel="noopener" class="btn btn--primary btn--lg" style="width:100%; justify-content:center; margin-top:20px;">Coming Soon</a>
+</div>
+
+
+<!-- ── HERO ──────────────────────────────────────────────── -->
+<section class="hero section--a">
+  <div class="hero__glow"></div>
+  <div class="hero__inner">
+    <div class="hero__badge">
+      <span class="hero__badge-dot"></span>
+      Runs on Atlassian Forge &nbsp;·&nbsp; <strong>Jira-native</strong>
+    </div>
+    <h1 class="hero__h1">Data governance,<br><span>built into Jira.</span></h1>
+    <p class="hero__sub">Catalogue business terms, KPIs, reports, systems, policies, and lineage in a governed workspace your teams already know how to use.</p>
+    <div class="hero__actions">
+      <a href="https://marketplace.atlassian.com" target="_blank" rel="noopener" class="btn btn--primary btn--lg">Coming Soon</a>
+      <a href="#product" class="btn btn--ghost btn--lg">View product guide</a>
+    </div>
+    <div class="hero__screenshot">
+      <img class="img-dark"  src="screenshots/dark/01-dashboard-governance-health.png"  alt="Data Atlas dashboard in Jira showing governance health, stewardship inbox, recently modified assets, and activity."/>
+      <img class="img-light" src="screenshots/01-dashboard-governance-health.png" alt="Data Atlas dashboard in Jira showing governance health, stewardship inbox, recently modified assets, and activity."/>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── LOGO STRIP ────────────────────────────────────────── -->
+<div class="logostrip">
+  <div class="logostrip__inner">
+    <span class="logostrip__label">Works with your Atlassian stack</span>
+    <div class="logostrip__pills">
+      <div class="logostrip__pill"><span class="logostrip__pill-dot" style="background:#0052cc;"></span>Jira Software</div>
+      <div class="logostrip__pill"><span class="logostrip__pill-dot" style="background:#0052cc;"></span>Jira Service Management</div>
+      <div class="logostrip__pill"><span class="logostrip__pill-dot" style="background:#6554c0;"></span>Rovo AI</div>
+      <div class="logostrip__pill"><span class="logostrip__pill-dot" style="background:#36b37e;"></span>Atlassian Forge</div>
+      <div class="logostrip__pill"><span class="logostrip__pill-dot" style="background:#ff7452;"></span>Confluence (optional)</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── PRODUCT OVERVIEW ───────────────────────────────────── -->
+<section class="section section--b" id="product">
+  <div class="inner">
+    <div class="section-header">
+      <div class="eyebrow">Product overview</div>
+      <h2>A governed data workspace inside your Jira project</h2>
+      <p>Data Atlas turns a Jira project into a complete governance operating model — catalogue, stewardship, intake, lineage, and admin in one place.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-card__icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <h3>Governance Dashboard</h3>
+        <p>See ownership gaps, classification gaps, overdue reviews, and stewardship activity in one Jira-native workspace.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card__icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        </div>
+        <h3>Business Glossary</h3>
+        <p>Give business users a searchable catalogue for governed definitions, KPIs, reports, and policies.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card__icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <h3>Governed Asset Register</h3>
+        <p>Filter governed assets by type, owner, domain, platform, classification, and status.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card__icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3>Review Queue</h3>
+        <p>Help stewards focus on assets that need review, ownership, classification, or governance action.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card__icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3>Intake Portal</h3>
+        <p>Use Jira Service Management to collect new data asset, metric, report, and change requests from business users.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card__icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a5f3fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+        </div>
+        <h3>Import &amp; Export</h3>
+        <p>Bulk onboard assets with a CSV template, preserve relationships, and safely update changed records.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card__icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a5f3fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
+        </div>
+        <h3>Lineage</h3>
+        <p>Track how terms, data elements, systems, flows, reports, dashboards, and policies relate to each other.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card__icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 8v4l3 3"/></svg>
+        </div>
+        <h3>Rovo AI Stewardship</h3>
+        <p>Use Rovo to summarise governance health, find assets, explain catalogue records, and suggest next actions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── PAIN POINTS ────────────────────────────────────────── -->
+<section class="section section--a">
+  <div class="inner">
+    <div class="section-header">
+      <div class="eyebrow">The problem</div>
+      <h2>Governance without a home makes everything harder</h2>
+      <p>Data Atlas replaces scattered, manual governance with a structured operating model your teams already know.</p>
+    </div>
+    <div class="pain-strip">
+      <div class="pain-item">
+        <div class="pain-item__label">Before</div>
+        <div class="pain-item__before">"Definitions are spread across Confluence, spreadsheets, and shared drives."</div>
+        <div class="pain-item__arrow">↓ with Data Atlas</div>
+        <div class="pain-item__after">A single searchable catalogue for every business term, KPI, and report.</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-item__label">Before</div>
+        <div class="pain-item__before">"We don't know who owns most of our data assets."</div>
+        <div class="pain-item__arrow">↓ with Data Atlas</div>
+        <div class="pain-item__after">Ownership gaps surface in the dashboard so stewards know where to act first.</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-item__label">Before</div>
+        <div class="pain-item__before">"Requests for new metrics come in from email and Slack — no traceability."</div>
+        <div class="pain-item__arrow">↓ with Data Atlas</div>
+        <div class="pain-item__after">Intake flows through a branded JSM portal, routed directly into the governance queue.</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-item__label">Before</div>
+        <div class="pain-item__before">"Nobody wants to learn another tool on top of Jira."</div>
+        <div class="pain-item__arrow">↓ with Data Atlas</div>
+        <div class="pain-item__after">Data Atlas lives inside Jira — no new platform, no new logins, no extra licences.</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-item__label">Before</div>
+        <div class="pain-item__before">"Our AI projects keep stalling because nobody trusts the underlying data."</div>
+        <div class="pain-item__arrow">↓ with Data Atlas</div>
+        <div class="pain-item__after">Governed, classified, and owned data assets give AI initiatives a reliable foundation to build on.</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-item__label">Before</div>
+        <div class="pain-item__before">"Reports use different definitions — nobody agrees on the numbers."</div>
+        <div class="pain-item__arrow">↓ with Data Atlas</div>
+        <div class="pain-item__after">A single governed definition for every KPI and measure means everyone reports from the same source of truth.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── BUSINESS GLOSSARY ──────────────────────────────────── -->
+<section class="section section--b" id="glossary">
+  <div class="inner">
+    <div class="split">
+      <div class="split__copy">
+        <div class="eyebrow">Business Glossary</div>
+        <h2 class="split__h2">One catalogue for every term, KPI, and report</h2>
+        <p class="split__body">Give business users a clear place to find trusted definitions, measures, reports, and data context — without leaving Jira. Data Atlas makes the glossary a live, governed workspace, not a static document.</p>
+        <ul class="split__bullets">
+          <li>Business terms, KPIs, systems, policies, and information flows</li>
+          <li>Searchable by type, domain, owner, platform, and status</li>
+          <li>Definitions carry ownership and review dates</li>
+          <li>Available to all Jira users without admin access</li>
+        </ul>
+      </div>
+      <div class="split__img">
+        <img class="img-dark"  src="screenshots/dark/02-catalog-business-glossary.png"  alt="Data Atlas catalogue showing governed data assets grouped for business glossary use."/>
+        <img class="img-light" src="screenshots/02-catalog-business-glossary.png" alt="Data Atlas catalogue showing governed data assets grouped for business glossary use."/>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── ASSET REGISTER ─────────────────────────────────────── -->
+<section class="section section--a">
+  <div class="inner">
+    <div class="split split--rev">
+      <div class="split__copy">
+        <div class="eyebrow">Asset Register</div>
+        <h2 class="split__h2">Filter and manage the full asset inventory</h2>
+        <p class="split__body">Stewards get a focused, filterable view of every governed asset across the organisation. Slice by type, owner, classification, domain, platform, and status to find gaps and prioritise work.</p>
+        <ul class="split__bullets">
+          <li>Filter by asset type, classification, domain, and lifecycle status</li>
+          <li>Track business owner, data steward, and technical owner</li>
+          <li>Asset detail keeps context, ownership, and relationships in one Jira issue</li>
+          <li>Uses Jira fields, filters, and queues — no new UI to learn</li>
+        </ul>
+      </div>
+      <div class="split__img">
+        <img class="img-dark"  src="screenshots/dark/03-register-governed-assets.png"  alt="Data Atlas governed asset register with filters and a table of data assets."/>
+        <img class="img-light" src="screenshots/03-register-governed-assets.png" alt="Data Atlas governed asset register with filters and a table of data assets."/>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── STEWARDSHIP ────────────────────────────────────────── -->
+<section class="section section--b" id="stewardship">
+  <div class="inner">
+    <div class="section-header">
+      <div class="eyebrow">Stewardship workflow</div>
+      <h2>Move from passive documentation to active governance work</h2>
+      <p>Data Atlas turns governance into trackable, triageable work — with review queues, ownership gaps, and Jira history so stewards always know what needs attention.</p>
+    </div>
+    <div class="gallery">
+      <div class="gallery__tabs" role="tablist">
+        <button class="gallery__tab is-active" data-panel="review"  role="tab">Review Queue</button>
+        <button class="gallery__tab"           data-panel="intake"  role="tab">Request Intake</button>
+        <button class="gallery__tab"           data-panel="detail"  role="tab">Asset Detail</button>
+      </div>
+      <div class="gallery__panel is-active" id="panel-review">
+        <div class="gallery__img">
+          <img class="img-dark"  src="screenshots/dark/05-review-queue.png"  alt="Data Atlas review queue listing governed assets and review actions."/>
+          <img class="img-light" src="screenshots/05-review-queue.png" alt="Data Atlas review queue listing governed assets and review actions."/>
+        </div>
+        <p class="gallery__caption">The review queue gives data stewards a focused view of assets that need review, ownership, or classification attention.</p>
+      </div>
+      <div class="gallery__panel" id="panel-intake">
+        <div class="gallery__img">
+          <img class="img-dark"  src="screenshots/dark/06-requests-linked-intake.png"  alt="Data Atlas requests page showing open data governance requests."/>
+          <img class="img-light" src="screenshots/06-requests-linked-intake.png" alt="Data Atlas requests page showing open data governance requests."/>
+        </div>
+        <p class="gallery__caption">Requests from the portal or service project are routed into Data Atlas so stewards can triage new metrics, glossary terms, reports, and asset changes.</p>
+      </div>
+      <div class="gallery__panel" id="panel-detail">
+        <div class="gallery__img">
+          <img class="img-dark"  src="screenshots/dark/04-asset-detail-drawer.png"  alt="Data Atlas asset detail drawer showing a governed information flow record."/>
+          <img class="img-light" src="screenshots/04-asset-detail-drawer.png" alt="Data Atlas asset detail drawer showing a governed information flow record."/>
+        </div>
+        <p class="gallery__caption">Each governed asset keeps context, ownership, lifecycle, and linked relationships in the same Jira work item.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── INTAKE PORTAL ──────────────────────────────────────── -->
+<section class="section section--a">
+  <div class="inner">
+    <div class="split">
+      <div class="split__copy">
+        <div class="eyebrow">Intake Portal</div>
+        <h2 class="split__h2">Capture data requests through a branded service portal</h2>
+        <p class="split__body">Capture requests for new measures, terms, dashboards, and asset changes through a branded Jira Service Management portal. Every request routes directly into the Data Atlas review and stewardship workflow.</p>
+        <ul class="split__bullets">
+          <li>New business terms, KPIs, reports, and systems</li>
+          <li>Asset changes and governance amendments</li>
+          <li>Routes directly into Data Atlas queues</li>
+          <li>Works with existing JSM portals and request types</li>
+        </ul>
+      </div>
+      <div class="split__img">
+        <img src="screenshots/10-service-portal-home-full.png" alt="Data Atlas service portal showing request types for new measures, business definitions, reports, and asset changes."/>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── LINEAGE ────────────────────────────────────────────── -->
+<section class="section section--b" id="lineage">
+  <div class="inner">
+    <div class="split split--rev">
+      <div class="split__copy">
+        <div class="eyebrow">Lineage &amp; Context</div>
+        <h2 class="split__h2">Understand how assets connect</h2>
+        <p class="split__body">Data Atlas records how business concepts, systems, information flows, reports, and policies connect to each other — so stewards can trace impact, upstream sources, and governed relationships across the data landscape.</p>
+        <ul class="split__bullets">
+          <li>Sourced from, feeds into, derived from, governed by, reports on</li>
+          <li>Integration platforms modelled as systems and information flows</li>
+          <li>Impact graph shows downstream and upstream dependencies</li>
+          <li>Relationships preserved through import/export round-trips</li>
+        </ul>
+      </div>
+      <div class="split__img">
+        <img class="img-dark"  src="screenshots/dark/08-lineage-impact-graph.png"  alt="Data Atlas lineage screen showing governed assets and their relationships."/>
+        <img class="img-light" src="screenshots/08-lineage-impact-graph.png" alt="Data Atlas lineage screen showing governed assets and their relationships."/>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── ADMIN ──────────────────────────────────────────────── -->
+<section class="section section--a">
+  <div class="inner">
+    <div class="split">
+      <div class="split__copy">
+        <div class="eyebrow">Atlassian-Native Administration</div>
+        <h2 class="split__h2">Configure without leaving Jira</h2>
+        <p class="split__body">Configure governance domains, classifications, field visibility, saved views, and setup health directly from Data Atlas settings — all within your existing Jira project, with no extra admin tools required.</p>
+        <ul class="split__bullets">
+          <li>Governance domains: Customer Experience, Finance, Operations, Risk &amp; Compliance, and more</li>
+          <li>Custom classification levels: Public, Internal, Confidential, Restricted</li>
+          <li>Role-based access control with Jira-native permissions</li>
+          <li>Runs on Atlassian Forge — no external infrastructure</li>
+        </ul>
+      </div>
+      <div class="split__img">
+        <img class="img-dark"  src="screenshots/dark/09-settings-governance-domains.png"  alt="Data Atlas settings page showing administrative configuration controls."/>
+        <img class="img-light" src="screenshots/09-settings-governance-domains.png" alt="Data Atlas settings page showing administrative configuration controls."/>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── OUTCOMES ───────────────────────────────────────────── -->
+<section class="section section--b">
+  <div class="inner">
+    <div class="section-header">
+      <div class="eyebrow">Outcomes</div>
+      <h2>What teams achieve with Data Atlas</h2>
+    </div>
+    <div class="outcome-grid">
+      <div class="outcome-card">
+        <div class="outcome-card__num">01</div>
+        <h3>Clear ownership</h3>
+        <p>Every governed asset has a business owner, data steward, and technical owner. No more ambiguity.</p>
+      </div>
+      <div class="outcome-card">
+        <div class="outcome-card__num">02</div>
+        <h3>Better gap visibility</h3>
+        <p>Classification and review gaps surface in the dashboard so stewards know where to focus first.</p>
+      </div>
+      <div class="outcome-card">
+        <div class="outcome-card__num">03</div>
+        <h3>Practical business glossary</h3>
+        <p>A live, searchable catalogue of terms, KPIs, and reports inside Jira — not a stale spreadsheet.</p>
+      </div>
+      <div class="outcome-card">
+        <div class="outcome-card__num">04</div>
+        <h3>Consistent intake</h3>
+        <p>Data requests flow through a controlled portal and queue — no more Slack messages and email threads.</p>
+      </div>
+      <div class="outcome-card">
+        <div class="outcome-card__num">05</div>
+        <h3>Traceable relationships</h3>
+        <p>Understand how assets, systems, reports, and policies connect through governed lineage records.</p>
+      </div>
+      <div class="outcome-card">
+        <div class="outcome-card__num">06</div>
+        <h3>Faster triage</h3>
+        <p>Stewards work from Jira queues and Rovo assistance — less hunting, more governed action.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── FAQ ───────────────────────────────────────────────── -->
+<section class="section section--a" id="faq">
+  <div class="inner--narrow">
+    <div class="section-header">
+      <div class="eyebrow">FAQ</div>
+      <h2>Common questions</h2>
+    </div>
+    <div class="faq">
+      <div class="faq__group">
+        <div class="faq__group-title">Product</div>
+        <div class="faq__item"><button class="faq__q">What is Data Atlas?<span class="faq__icon">+</span></button><div class="faq__a">Data Atlas is a Jira-native data governance workspace for cataloguing business terms, KPIs, measures, reports, dashboards, systems, policies, data elements, and information flows.</div></div>
+        <div class="faq__item"><button class="faq__q">Is Data Atlas a replacement for Jira?<span class="faq__icon">+</span></button><div class="faq__a">No. Data Atlas extends Jira with a purpose-built governance model, screens, fields, request workflows, import/export, lineage, catalogue views, and stewardship queues.</div></div>
+        <div class="faq__item"><button class="faq__q">Who is Data Atlas for?<span class="faq__icon">+</span></button><div class="faq__a">Data Atlas is for data governance teams, data stewards, analytics teams, business owners, system owners, and service teams that need a practical way to manage governed data assets.</div></div>
+        <div class="faq__item"><button class="faq__q">What asset types does Data Atlas support?<span class="faq__icon">+</span></button><div class="faq__a">Data Atlas supports business terms, data elements, KPIs and measures, systems, information flows, reports and dashboards, and policies or standards.</div></div>
+        <div class="faq__item"><button class="faq__q">Does Data Atlas support lineage?<span class="faq__icon">+</span></button><div class="faq__a">Yes. Data Atlas supports relationships such as sourced from, feeds into, derived from, governed by, reports on, and is about. Integration platforms can be represented as systems and information flows with full transformation and mapping metadata.</div></div>
+      </div>
+      <div class="faq__group">
+        <div class="faq__group-title">Jira &amp; Service Management</div>
+        <div class="faq__item"><button class="faq__q">Does Data Atlas require Jira Service Management?<span class="faq__icon">+</span></button><div class="faq__a">No. The core governance workspace runs in Jira. Jira Service Management is recommended when you want a branded intake portal for data asset requests.</div></div>
+        <div class="faq__item"><button class="faq__q">Can Data Atlas use an existing service portal?<span class="faq__icon">+</span></button><div class="faq__a">Yes. The preferred enterprise pattern is to let an existing service portal raise Data Atlas request types or route governance requests into the Data Atlas review and requests queues.</div></div>
+        <div class="faq__item"><button class="faq__q">Does Data Atlas work with native Jira reporting?<span class="faq__icon">+</span></button><div class="faq__a">Yes. Data Atlas uses Jira issues and fields, so you can use Jira filters, dashboards, queues, and reports with your governance data.</div></div>
+      </div>
+      <div class="faq__group">
+        <div class="faq__group-title">Import &amp; Export</div>
+        <div class="faq__item"><button class="faq__q">Can we bulk import assets?<span class="faq__icon">+</span></button><div class="faq__a">Yes. Data Atlas includes an import workflow with a downloadable CSV template, column mapping, validation, and execution. The import is update-only for changed records and create-only for new records — it will not delete existing records absent from the file.</div></div>
+        <div class="faq__item"><button class="faq__q">Can exports be re-imported?<span class="faq__icon">+</span></button><div class="faq__a">Yes. The export format preserves the same template shape, including relationship columns, so teams can round-trip data safely.</div></div>
+      </div>
+      <div class="faq__group">
+        <div class="faq__group-title">AI &amp; Rovo</div>
+        <div class="faq__item"><button class="faq__q">Does Data Atlas use Rovo?<span class="faq__icon">+</span></button><div class="faq__a">Data Atlas includes Rovo actions that can help summarise governance health, find assets, and explain catalogue records when the tenant has Rovo enabled.</div></div>
+        <div class="faq__item"><button class="faq__q">Does Rovo replace stewards?<span class="faq__icon">+</span></button><div class="faq__a">No. Rovo can assist with discovery and summarisation, but steward approval and governance decisions remain human-controlled.</div></div>
+      </div>
+      <div class="faq__group">
+        <div class="faq__group-title">Security &amp; Deployment</div>
+        <div class="faq__item"><button class="faq__q">Where is Data Atlas hosted?<span class="faq__icon">+</span></button><div class="faq__a">Data Atlas is a Forge app running on Atlassian infrastructure and uses Jira as the system of record. No external hosting or infrastructure is required.</div></div>
+        <div class="faq__item"><button class="faq__q">Does Data Atlas require Confluence?<span class="faq__icon">+</span></button><div class="faq__a">No. Confluence can be useful for documentation, but Data Atlas does not require it — not all customers have Confluence enabled.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── CTA ───────────────────────────────────────────────── -->
+<section class="section section--b" id="cta">
+  <div class="inner">
+    <div class="cta-block">
+      <h2>Start with a governed workspace your teams can actually use.</h2>
+      <p>Available now on the Atlassian Marketplace. A Jira-native deployment — no new platform, no migration, no extra licences.</p>
+      <div class="cta-block__actions">
+        <a href="https://marketplace.atlassian.com" target="_blank" rel="noopener" class="btn btn--primary btn--lg">Coming Soon</a>
+        <a href="#product" class="btn btn--ghost btn--lg">See Data Atlas in Jira</a>
+      </div>
+      <div class="atlassian-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="#0052cc"><rect width="24" height="24" rx="4" fill="#0052cc"/><path d="M13.5 4.5L8 15h4l1.5-3h4.5l-4.5-7.5z" fill="white"/></svg>
+        Runs on Atlassian Forge &nbsp;·&nbsp; Data stays on your Atlassian infrastructure
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── FOOTER ─────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__brand">
+      <a href="#" style="display:flex; align-items:center; gap:10px;">
+        <div class="nav__tile">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+            <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+            <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+            <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+          </svg>
+        </div>
+        <div class="nav__wordmark">Data<span>Atlas</span></div>
+      </a>
+      <p>A Jira-native data governance workspace for cataloguing, reviewing, and tracing governed data assets.</p>
+    </div>
+    <div class="footer__col">
+      <h4>Product</h4>
+      <ul>
+        <li><a href="#product">Overview</a></li>
+        <li><a href="#glossary">Business Glossary</a></li>
+        <li><a href="#stewardship">Stewardship</a></li>
+        <li><a href="#lineage">Lineage</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </div>
+    <div class="footer__col">
+      <h4>Resources</h4>
+      <ul>
+        <li><a href="DataAtlas User Guide.html">User Guide</a></li>
+        <li><a href="DataAtlas Admin Guide.html">Admin Guide</a></li>
+        <li><a href="#">Import Template</a></li>
+        <li><a href="#">Changelog</a></li>
+      </ul>
+    </div>
+    <div class="footer__col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">EULA</a></li>
+        <li><a href="#">Security</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <span>© 2026 Data Atlas. All rights reserved.</span>
+    <span>Runs on Atlassian Forge &nbsp;·&nbsp; v2.6.0</span>
+  </div>
+</footer>
+
+
+<script>
+// ── Theme ─────────────────────────────────────────────────
+const html = document.documentElement;
+const btnDark  = document.getElementById('btn-dark');
+const btnLight = document.getElementById('btn-light');
+
+function applyTheme(theme) {
+  html.setAttribute('data-theme', theme);
+  btnDark.classList.toggle('is-active',  theme === 'dark');
+  btnLight.classList.toggle('is-active', theme === 'light');
+  btnDark.setAttribute('aria-pressed',  theme === 'dark');
+  btnLight.setAttribute('aria-pressed', theme === 'light');
+  try { localStorage.setItem('da-theme', theme); } catch(e) {}
+}
+
+// Initialise: saved pref → system preference → dark
+(function() {
+  let saved;
+  try { saved = localStorage.getItem('da-theme'); } catch(e) {}
+  if (saved === 'dark' || saved === 'light') {
+    applyTheme(saved);
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    applyTheme('light');
+  } else {
+    applyTheme('dark');
+  }
+})();
+
+// Also listen for OS-level changes (only if user hasn't manually picked)
+window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
+  let saved;
+  try { saved = localStorage.getItem('da-theme'); } catch(ex) {}
+  if (!saved) applyTheme(e.matches ? 'light' : 'dark');
+});
+
+btnDark.addEventListener('click',  () => applyTheme('dark'));
+btnLight.addEventListener('click', () => applyTheme('light'));
+
+// ── Nav scroll ────────────────────────────────────────────
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+}, { passive: true });
+
+// ── Mobile menu ───────────────────────────────────────────
+const mobileMenu = document.getElementById('mobile-menu');
+const mobileBtn  = document.getElementById('nav-mobile-btn');
+mobileBtn.addEventListener('click', () => {
+  const open = mobileMenu.style.display === 'block';
+  mobileMenu.style.display = open ? 'none' : 'block';
+});
+mobileMenu.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => { mobileMenu.style.display = 'none'; });
+});
+
+// ── Gallery tabs ──────────────────────────────────────────
+document.querySelectorAll('.gallery__tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const panel = tab.dataset.panel;
+    tab.closest('.gallery').querySelectorAll('.gallery__tab').forEach(t => t.classList.remove('is-active'));
+    tab.closest('.gallery').querySelectorAll('.gallery__panel').forEach(p => p.classList.remove('is-active'));
+    tab.classList.add('is-active');
+    document.getElementById('panel-' + panel).classList.add('is-active');
+  });
+});
+
+// ── FAQ accordion ─────────────────────────────────────────
+document.querySelectorAll('.faq__q').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.closest('.faq__item');
+    const isOpen = item.classList.contains('is-open');
+    document.querySelectorAll('.faq__item').forEach(i => i.classList.remove('is-open'));
+    if (!isOpen) item.classList.add('is-open');
+  });
+});
+</script>
+</body>
+</html>

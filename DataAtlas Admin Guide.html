@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Data Atlas — Admin Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; text-decoration: none; }
+
+:root {
+  --pale:        #a5f3fc;
+  --primary:     #22d3ee;
+  --accent:      #38bdf8;
+  --deep:        #0e7490;
+  --violet:      #a78bfa;
+  --brand-grad:  linear-gradient(90deg, #a5f3fc 0%, #22d3ee 50%, #a78bfa 100%);
+  --ff: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  --nav-h: 60px;
+  --sidebar-w: 260px;
+}
+
+[data-theme="dark"] {
+  --bg:          #080a0d;
+  --bg-elev:     #0d1117;
+  --bg-section:  #0f1318;
+  --card:        #131820;
+  --card-2:      #161d26;
+  --border:      #1e2530;
+  --border-2:    #252e3a;
+  --fg:          #e8eaed;
+  --muted:       #8b949e;
+  --muted-2:     #5a6370;
+  --tile-bg:     linear-gradient(180deg, #1a2329, #0f1418);
+  --tile-border: #1f2c34;
+  --nav-blur:    rgba(8,10,13,0.9);
+  --code-bg:     #161d26;
+  color-scheme: dark;
+}
+[data-theme="light"] {
+  --bg:          #f5f7fa;
+  --bg-elev:     #ffffff;
+  --bg-section:  #eef1f6;
+  --card:        #ffffff;
+  --card-2:      #f0f3f8;
+  --border:      #dde2ea;
+  --border-2:    #c8d0db;
+  --fg:          #111418;
+  --muted:       #5a6370;
+  --muted-2:     #8b949e;
+  --tile-bg:     linear-gradient(180deg, #f0f4f8, #e4eaf2);
+  --tile-border: #c8d0db;
+  --nav-blur:    rgba(245,247,250,0.92);
+  --code-bg:     #f0f3f8;
+  color-scheme: light;
+}
+
+body {
+  font-family: var(--ff);
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+}
+
+.img-dark  { display: block !important; }
+.img-light { display: none  !important; }
+[data-theme="light"] .img-dark  { display: none  !important; }
+[data-theme="light"] .img-light { display: block !important; }
+
+/* ── Nav ────────────────────────────────────────────────── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--nav-h); padding: 0 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--nav-blur); border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+}
+.nav__logo { display: flex; align-items: center; gap: 10px; }
+.nav__tile {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: var(--tile-bg); border: 1px solid var(--tile-border);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.nav__wordmark { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
+.nav__wordmark span { color: var(--primary); }
+.nav__right { display: flex; align-items: center; gap: 12px; }
+.nav__back { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); font-weight: 500; transition: color 0.15s; }
+.nav__back:hover { color: var(--fg); }
+.nav__badge { padding: 4px 10px; border-radius: 999px; background: var(--card); border: 1px solid var(--border-2); font-size: 11px; font-weight: 600; color: var(--violet); letter-spacing: 0.04em; text-transform: uppercase; }
+
+.theme-toggle { display: flex; align-items: center; background: var(--card); border: 1px solid var(--border-2); border-radius: 999px; padding: 3px; gap: 2px; }
+.theme-toggle__btn { width: 28px; height: 24px; border-radius: 999px; background: transparent; border: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); transition: background 0.2s, color 0.2s; }
+.theme-toggle__btn.is-active { background: var(--bg-section); color: var(--fg); }
+
+/* ── Layout ─────────────────────────────────────────────── */
+.shell { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; padding-top: var(--nav-h); }
+
+.sidebar { position: sticky; top: var(--nav-h); height: calc(100vh - var(--nav-h)); overflow-y: auto; padding: 32px 0 48px; border-right: 1px solid var(--border); background: var(--bg-section); }
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 4px; }
+.sidebar__label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted-2); padding: 0 20px; margin-bottom: 8px; margin-top: 24px; }
+.sidebar__label:first-child { margin-top: 0; }
+.sidebar__link { display: block; padding: 8px 20px; font-size: 13px; font-weight: 500; color: var(--muted); transition: color 0.15s, background 0.15s; border-left: 2px solid transparent; }
+.sidebar__link:hover { color: var(--fg); background: var(--card); }
+.sidebar__link.is-active { color: var(--primary); border-left-color: var(--primary); background: var(--card); }
+
+.main { padding: 56px clamp(32px, 6vw, 96px) 120px; max-width: 820px; }
+
+/* ── Doc typography ─────────────────────────────────────── */
+.doc-header { margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+.doc-header__eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--violet); margin-bottom: 12px; }
+.doc-header__eyebrow::before { content: ''; display: block; width: 16px; height: 2px; background: var(--brand-grad); border-radius: 2px; }
+.doc-header h1 { font-size: clamp(28px, 4vw, 42px); font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 14px; }
+.doc-header p { font-size: 17px; color: var(--muted); line-height: 1.6; max-width: 560px; text-wrap: pretty; }
+
+.doc-section { margin-bottom: 72px; scroll-margin-top: calc(var(--nav-h) + 24px); }
+.doc-section h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+.doc-section h2 .section-num { font-size: 11px; color: var(--muted-2); font-variant-numeric: tabular-nums; font-weight: 600; letter-spacing: 0.06em; background: var(--card); border: 1px solid var(--border-2); padding: 3px 8px; border-radius: 6px; flex-shrink: 0; }
+.doc-section p { font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 16px; text-wrap: pretty; }
+.doc-section p:last-child { margin-bottom: 0; }
+.doc-section ol, .doc-section ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.doc-section ol { counter-reset: step; }
+.doc-section ol li { display: flex; gap: 14px; align-items: flex-start; font-size: 14px; color: var(--muted); line-height: 1.6; }
+.doc-section ol li::before { counter-increment: step; content: counter(step); min-width: 24px; height: 24px; border-radius: 50%; background: var(--card); border: 1px solid var(--border-2); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--primary); flex-shrink: 0; margin-top: 1px; }
+.doc-section ul li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--muted); line-height: 1.6; }
+.doc-section ul li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--primary); flex-shrink: 0; margin-top: 7px; }
+.doc-section strong { color: var(--fg); font-weight: 600; }
+
+.doc-img { margin: 24px 0; border-radius: 14px; overflow: hidden; border: 1px solid var(--border-2); box-shadow: 0 8px 32px rgba(0,0,0,0.25); cursor: zoom-in; transition: border-color 0.2s; }
+.doc-img:hover { border-color: var(--primary); }
+.doc-img img { width: 100%; height: auto; display: block; }
+.doc-img__caption { padding: 10px 16px; background: var(--card); border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); line-height: 1.45; }
+
+.callout { display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; border-radius: 10px; background: var(--card); border: 1px solid var(--border-2); margin: 20px 0; }
+.callout--tip  { border-left: 3px solid var(--primary); }
+.callout--warn { border-left: 3px solid #f59e0b; }
+.callout--note { border-left: 3px solid var(--violet); }
+.callout__icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.callout p { font-size: 13px; color: var(--muted); line-height: 1.55; margin: 0; }
+.callout strong { color: var(--fg); }
+
+/* Data table */
+.data-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+.data-table th { text-align: left; padding: 10px 14px; background: var(--card); border-bottom: 2px solid var(--border-2); font-weight: 600; color: var(--fg); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+.data-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); color: var(--muted); line-height: 1.5; vertical-align: top; }
+.data-table tr:last-child td { border-bottom: 0; }
+.data-table td strong { color: var(--fg); }
+
+/* Request type cards */
+.req-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 20px 0; }
+.req-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px; display: flex; flex-direction: column; gap: 8px; }
+.req-card__title { font-size: 14px; font-weight: 700; color: var(--fg); letter-spacing: -0.01em; }
+.req-card__fields { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+/* Setup checklist */
+.checklist { display: flex; flex-direction: column; gap: 0; margin: 20px 0; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.checklist__item { display: flex; align-items: flex-start; gap: 14px; padding: 14px 18px; border-bottom: 1px solid var(--border); background: var(--card); }
+.checklist__item:last-child { border-bottom: 0; }
+.checklist__box { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--border-2); flex-shrink: 0; margin-top: 2px; }
+.checklist__text { font-size: 14px; color: var(--muted); line-height: 1.5; }
+.checklist__text strong { color: var(--fg); }
+
+/* Roles table tag */
+.role-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.role-tag--admin { background: rgba(34,211,238,0.12); color: var(--primary); }
+.role-tag--gov   { background: rgba(167,139,250,0.12); color: var(--violet); }
+
+/* CTA & footer */
+.doc-cta { background: var(--card); border: 1px solid var(--border-2); border-radius: 14px; padding: 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-top: 48px; }
+.doc-cta p { font-size: 15px; font-weight: 600; margin: 0; }
+.doc-cta span { font-size: 13px; color: var(--muted); }
+.doc-footer { padding: 32px 0 0; margin-top: 48px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+.doc-footer__links { display: flex; gap: 20px; }
+.doc-footer__links a { font-size: 13px; color: var(--muted); transition: color 0.15s; }
+.doc-footer__links a:hover { color: var(--fg); }
+.doc-footer__meta { font-size: 12px; color: var(--muted-2); }
+
+.btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 20px; border-radius: 8px; font-family: var(--ff); font-size: 14px; font-weight: 600; letter-spacing: -0.01em; cursor: pointer; border: 0; transition: opacity 0.15s, transform 0.15s; white-space: nowrap; }
+.btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn--primary { background: var(--primary); color: #001418; }
+.btn--ghost { background: transparent; color: var(--muted); border: 1px solid var(--border-2); }
+.btn--ghost:hover { color: var(--fg); border-color: var(--fg); opacity: 1; }
+
+/* Lightbox */
+.lightbox { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.88); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 24px; cursor: zoom-out; }
+.lightbox.is-open { display: flex; animation: lbIn 0.2s ease; }
+@keyframes lbIn { from { opacity: 0; } to { opacity: 1; } }
+.lightbox__img { max-width: min(1100px, 95vw); max-height: 90vh; border-radius: 14px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 32px 80px rgba(0,0,0,0.7); object-fit: contain; display: block; animation: lbImgIn 0.25s ease; }
+@keyframes lbImgIn { from { transform: scale(0.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.lightbox__label { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.12); border-radius: 999px; padding: 6px 16px; font-size: 12px; color: rgba(255,255,255,0.7); white-space: nowrap; font-family: var(--ff); font-weight: 500; }
+.lightbox__close { position: absolute; top: 20px; right: 24px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.8); font-size: 18px; transition: background 0.15s; }
+.lightbox__close:hover { background: rgba(255,255,255,0.15); }
+
+@media (max-width: 768px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .main { padding: 32px 20px 80px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav__logo" href="index.html">
+    <div class="nav__tile">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4">
+        <path d="M5 9l7-5 7 5"  stroke="#a5f3fc"/>
+        <path d="M5 14l7-5 7 5" stroke="#22d3ee"/>
+        <path d="M5 19l7-5 7 5" stroke="#a78bfa"/>
+      </svg>
+    </div>
+    <div class="nav__wordmark">Data<span>Atlas</span></div>
+  </a>
+  <div class="nav__right">
+    <span class="nav__badge">Admin Guide</span>
+    <div class="theme-toggle" role="group" aria-label="Color theme">
+      <button class="theme-toggle__btn is-active" id="btn-dark" title="Dark mode">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="theme-toggle__btn" id="btn-light" title="Light mode">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
+    <a class="nav__back" href="index.html">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to website
+    </a>
+  </div>
+</nav>
+
+<div class="shell">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar__label">Setup</div>
+    <a class="sidebar__link is-active" href="#deployment">Deployment Model</a>
+    <a class="sidebar__link" href="#setup-health">App Setup Health</a>
+
+    <div class="sidebar__label">Configuration</div>
+    <a class="sidebar__link" href="#request-types">Request Types</a>
+    <a class="sidebar__link" href="#portal">Portal Configuration</a>
+    <a class="sidebar__link" href="#domains">Domains &amp; Classifications</a>
+    <a class="sidebar__link" href="#roles">Access Control</a>
+
+    <div class="sidebar__label">Operations</div>
+    <a class="sidebar__link" href="#import-export">Import &amp; Export</a>
+    <a class="sidebar__link" href="#rovo">Rovo Configuration</a>
+    <a class="sidebar__link" href="#limitations">Known Limitations</a>
+
+    <div class="sidebar__label">More</div>
+    <a class="sidebar__link" href="DataAtlas User Guide.html">User Guide →</a>
+    <a class="sidebar__link" href="index.html">Back to website →</a>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="doc-header">
+      <div class="doc-header__eyebrow">Documentation</div>
+      <h1>Admin Guide</h1>
+      <p>Setting up, configuring, and operating a Data Atlas governance workspace in Jira or Jira Service Management.</p>
+    </div>
+
+    <!-- 1. Deployment -->
+    <section class="doc-section" id="deployment">
+      <h2><span class="section-num">01</span>Deployment Model</h2>
+      <p>Data Atlas is deployed as a Forge app for Jira. It runs in a standard Jira project or a Jira Service Management project depending on whether intake portal functionality is required.</p>
+      <table class="data-table">
+        <thead>
+          <tr><th>Scenario</th><th>Recommended project type</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Governance and catalogue management only</td><td><strong>Standard Jira project</strong></td></tr>
+          <tr><td>Governance plus branded intake portal</td><td><strong>Jira Service Management project</strong></td></tr>
+          <tr><td>Existing JSM portal already in use</td><td>Route Data Atlas request types into existing portal</td></tr>
+        </tbody>
+      </table>
+      <p>Recommended commercial setup:</p>
+      <ul>
+        <li>Use a dedicated Jira project as the governance workspace.</li>
+        <li>Use a Jira Service Management portal for business intake where JSM is enabled.</li>
+        <li>Route portal request types into the Data Atlas review and requests workflow.</li>
+        <li>Keep business domains inside Data Atlas as metadata — not as separate Jira projects.</li>
+      </ul>
+      <div class="callout callout--tip">
+        <span class="callout__icon">💡</span>
+        <p><strong>Tip:</strong> Using domains inside a single Data Atlas project is almost always preferable to creating separate Jira projects per business area. Saved views and filters provide the same separation with less overhead.</p>
+      </div>
+    </section>
+
+    <!-- 2. Setup health -->
+    <section class="doc-section" id="setup-health">
+      <h2><span class="section-num">02</span>App Setup Health</h2>
+      <p>After installing Data Atlas in a project, confirm setup is complete before onboarding users:</p>
+      <div class="checklist">
+        <div class="checklist__item">
+          <div class="checklist__box"></div>
+          <div class="checklist__text">Open <strong>Settings → Setup health</strong> and confirm all issue types, fields, link types, and saved filters are provisioned.</div>
+        </div>
+        <div class="checklist__item">
+          <div class="checklist__box"></div>
+          <div class="checklist__text">Click <strong>Re-apply DataAtlas layout</strong> if any items show as missing.</div>
+        </div>
+        <div class="checklist__item">
+          <div class="checklist__box"></div>
+          <div class="checklist__text">Confirm the field configuration and screen scheme are associated with the project.</div>
+        </div>
+        <div class="checklist__item">
+          <div class="checklist__box"></div>
+          <div class="checklist__text">For JSM projects, verify that Data Atlas governance fields are visible on service project screens — click <strong>Re-apply DataAtlas layout</strong> if they are missing.</div>
+        </div>
+        <div class="checklist__item">
+          <div class="checklist__box"></div>
+          <div class="checklist__text">Navigate to <strong>Dashboard</strong> and confirm governance health metrics load correctly.</div>
+        </div>
+      </div>
+      <div class="doc-img">
+        <img class="img-dark"  src="screenshots/dark/09-settings-governance-domains.png" alt="Data Atlas settings page."/>
+        <img class="img-light" src="screenshots/09-settings-governance-domains.png"      alt="Data Atlas settings page."/>
+        <div class="doc-img__caption">Data Atlas settings — domains, classifications, field visibility, saved views, and setup health are all managed here.</div>
+      </div>
+      <div class="callout callout--warn">
+        <span class="callout__icon">⚠️</span>
+        <p><strong>JSM projects:</strong> Jira may create service project screens that do not initially expose Data Atlas governance fields. Always run setup health after installing in a fresh JSM project.</p>
+      </div>
+    </section>
+
+    <!-- 3. Request types -->
+    <section class="doc-section" id="request-types">
+      <h2><span class="section-num">03</span>Request Types</h2>
+      <p>Configure these four request types in the Data Atlas service portal. Each type captures the context needed for steward triage.</p>
+      <div class="req-grid">
+        <div class="req-card">
+          <div class="req-card__title">New measure or metric</div>
+          <div class="req-card__fields">Business question, calculation logic, dimensions, source systems, cadence, owner, reporting use.</div>
+        </div>
+        <div class="req-card">
+          <div class="req-card__title">New business term or definition</div>
+          <div class="req-card__fields">Proposed term, definition, domain, policy context, source system, steward.</div>
+        </div>
+        <div class="req-card">
+          <div class="req-card__title">New report or dashboard</div>
+          <div class="req-card__fields">Report purpose, audience, source assets, cadence, sensitivity, owner.</div>
+        </div>
+        <div class="req-card">
+          <div class="req-card__title">Change to existing asset</div>
+          <div class="req-card__fields">Asset key, requested change, reason, impact, approver, effective date.</div>
+        </div>
+      </div>
+      <div class="callout callout--note">
+        <span class="callout__icon">ℹ️</span>
+        <p><strong>Portal visibility:</strong> Request types created via the REST API are hidden until added to a portal group. After creating each type, go to <strong>Project settings → Portal → Portal groups</strong> and add each request type to the <strong>General</strong> group.</p>
+      </div>
+    </section>
+
+    <!-- 4. Portal config -->
+    <section class="doc-section" id="portal">
+      <h2><span class="section-num">04</span>Portal Configuration</h2>
+      <p>Configure the portal name and introduction text so business users understand what to request and where.</p>
+      <table class="data-table">
+        <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Portal name</td><td><strong>Data Atlas</strong></td></tr>
+          <tr><td>Introduction text</td><td>Raise Data Atlas governance requests for new metrics, business terms, reports, dashboards, ownership changes, and data definition reviews.</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-img">
+        <img src="screenshots/10-service-portal-home-full.png" alt="Data Atlas service portal home."/>
+        <div class="doc-img__caption">The configured Data Atlas portal showing the four branded request types visible to business users.</div>
+      </div>
+    </section>
+
+    <!-- 5. Domains & Classifications -->
+    <section class="doc-section" id="domains">
+      <h2><span class="section-num">05</span>Domains &amp; Classifications</h2>
+      <p>Use <strong>Settings → Domains</strong> to model business domains inside a Data Atlas project. This supports a single governance project for the organisation while still allowing assets to be grouped by business area.</p>
+      <p>Suggested domains to configure:</p>
+      <ul>
+        <li>Customer Experience</li>
+        <li>Finance</li>
+        <li>Operations</li>
+        <li>Risk and Compliance</li>
+        <li>People</li>
+        <li>Sales</li>
+        <li>Product</li>
+        <li>Supply Chain</li>
+      </ul>
+      <p>Use <strong>Settings → Classifications</strong> to define sensitivity labels. Suggested classification levels:</p>
+      <table class="data-table">
+        <thead><tr><th>Label</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Public</strong></td><td>Assets with no sensitivity — safe for unrestricted access.</td></tr>
+          <tr><td><strong>Internal</strong></td><td>For internal business use — not for external sharing.</td></tr>
+          <tr><td><strong>Confidential</strong></td><td>Restricted to specific teams — access by approval.</td></tr>
+          <tr><td><strong>Restricted</strong></td><td>Highly sensitive — limited access, regulatory implications.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 6. Roles -->
+    <section class="doc-section" id="roles">
+      <h2><span class="section-num">06</span>Access Control &amp; Roles</h2>
+      <p>Data Atlas uses server-side role-based access control. Roles are assigned per tenant and enforced in the backend — not in the client.</p>
+      <table class="data-table">
+        <thead><tr><th>Role</th><th>Type</th><th>Key permissions</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Reader</strong></td><td><span class="role-tag role-tag--gov">Governance</span></td><td>Read assets and catalogue</td></tr>
+          <tr><td><strong>Contributor</strong></td><td><span class="role-tag role-tag--gov">Governance</span></td><td>Read + write assets</td></tr>
+          <tr><td><strong>Data Steward</strong></td><td><span class="role-tag role-tag--gov">Governance</span></td><td>Review, classify, and manage assets</td></tr>
+          <tr><td><strong>Data Owner</strong></td><td><span class="role-tag role-tag--gov">Governance</span></td><td>Own and approve assets in their domain</td></tr>
+          <tr><td><strong>Business Owner</strong></td><td><span class="role-tag role-tag--gov">Governance</span></td><td>Business sign-off on governed definitions</td></tr>
+          <tr><td><strong>Technical Owner</strong></td><td><span class="role-tag role-tag--gov">Governance</span></td><td>Technical metadata accountability</td></tr>
+          <tr><td><strong>Reviewer / Approver</strong></td><td><span class="role-tag role-tag--gov">Governance</span></td><td>Review and approve change requests</td></tr>
+          <tr><td><strong>App Admin</strong></td><td><span class="role-tag role-tag--admin">Admin</span></td><td>All governance permissions + settings read</td></tr>
+          <tr><td><strong>Governance Admin</strong></td><td><span class="role-tag role-tag--admin">Admin</span></td><td>Full access including audit log and settings write</td></tr>
+        </tbody>
+      </table>
+      <div class="callout callout--tip">
+        <span class="callout__icon">💡</span>
+        <p><strong>Least privilege:</strong> Assign <strong>Reader</strong> to business users who only need to browse the catalogue. Reserve <strong>Governance Admin</strong> for the team responsible for Data Atlas configuration and audit.</p>
+      </div>
+    </section>
+
+    <!-- 7. Import & Export -->
+    <section class="doc-section" id="import-export">
+      <h2><span class="section-num">07</span>Import &amp; Export</h2>
+      <p>The import template is the standard onboarding mechanism for initial catalogue loads. Use it to populate assets in bulk before opening Data Atlas to business users.</p>
+      <ol>
+        <li>Download the template from <strong>Import → Download CSV template</strong>.</li>
+        <li>Populate required columns: issue type, name, definition, classification, domain, platform, owner fields, review date, technical name, data type, integration platform, calculation logic, frequency, and relationship columns.</li>
+        <li>Upload, map, validate, resolve duplicates, and execute.</li>
+      </ol>
+      <p>Key import behaviour to communicate to users:</p>
+      <ul>
+        <li><strong>Update-only for changed records</strong> — existing records with matching keys are updated, not duplicated.</li>
+        <li><strong>Create-only for new records</strong> — rows without a matching key create new assets.</li>
+        <li><strong>No delete on absence</strong> — records absent from the import file are left untouched.</li>
+        <li><strong>Round-trip safe</strong> — exports preserve relationship columns and can be re-imported using the same template shape.</li>
+      </ul>
+      <div class="doc-img">
+        <img class="img-dark"  src="screenshots/dark/07-import-template-and-mapping.png" alt="Data Atlas import screen."/>
+        <img class="img-light" src="screenshots/07-import-template-and-mapping.png"      alt="Data Atlas import screen."/>
+        <div class="doc-img__caption">The import workflow — template download, column mapping, validation, and execution in one guided flow.</div>
+      </div>
+    </section>
+
+    <!-- 8. Rovo -->
+    <section class="doc-section" id="rovo">
+      <h2><span class="section-num">08</span>Rovo Configuration</h2>
+      <p>Data Atlas includes Rovo actions for stewardship assistance. Complete these steps to enable Rovo for the tenant:</p>
+      <ol>
+        <li>Verify the Rovo agent is enabled for the Atlassian site.</li>
+        <li>Confirm Data Atlas action endpoints respond successfully from <strong>Settings</strong>.</li>
+        <li>Add product-specific instructions to the Rovo agent so it understands Data Atlas assets, domains, requests, and stewardship workflows.</li>
+        <li>Consider assigning a Rovo agent to the portal once the tenant supports Rovo service configuration.</li>
+      </ol>
+      <div class="callout callout--note">
+        <span class="callout__icon">ℹ️</span>
+        <p>Rovo can assist with discovery and summarisation, but <strong>steward approval and governance decisions remain human-controlled</strong>. Rovo should not be configured to automatically approve, classify, or assign ownership to assets.</p>
+      </div>
+    </section>
+
+    <!-- 9. Known limitations -->
+    <section class="doc-section" id="limitations">
+      <h2><span class="section-num">09</span>Known Limitations</h2>
+      <p>The following limitations apply to the current release and should be communicated to stakeholders before go-live:</p>
+      <ul>
+        <li><strong>Portal request forms</strong> — request type forms currently use JSM's default required fields. Richer request forms should be completed in JSM Forms or request type field configuration before final customer-facing screenshots or go-live.</li>
+        <li><strong>Admin session screenshots</strong> — screenshots captured in an authenticated admin session may expose admin-only Jira controls. Crop screenshots to the product area when preparing public marketing material.</li>
+        <li><strong>In-memory persistence</strong> — current data persistence is in-memory inside the backend service container. Data resets with process or app lifecycle. Confirm Forge storage behaviour for the production environment before customer onboarding.</li>
+        <li><strong>Rovo dependency</strong> — Ask Steward functionality requires Rovo to be enabled for the tenant and Data Atlas Forge action endpoints to be healthy.</li>
+      </ul>
+    </section>
+
+    <!-- CTA -->
+    <div class="doc-cta">
+      <div>
+        <p>Ready to deploy Data Atlas?</p>
+        <span>Find it on the Atlassian Marketplace and install into your Jira project.</span>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="DataAtlas User Guide.html" class="btn btn--ghost">User Guide</a>
+        <a href="https://marketplace.atlassian.com" target="_blank" rel="noopener" class="btn btn--primary">Coming Soon</a>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <div class="doc-footer__links">
+        <a href="index.html">Home</a>
+        <a href="DataAtlas User Guide.html">User Guide</a>
+        <a href="https://marketplace.atlassian.com" target="_blank" rel="noopener">Marketplace</a>
+      </div>
+      <div class="doc-footer__meta">Data Atlas · Admin Guide · v2.6.0</div>
+    </div>
+  </main>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox__close" id="lightbox-close">&times;</button>
+  <img class="lightbox__img" id="lightbox-img" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt=""/>
+  <div class="lightbox__label" id="lightbox-label"></div>
+</div>
+
+<script>
+const html = document.documentElement;
+const btnDark  = document.getElementById('btn-dark');
+const btnLight = document.getElementById('btn-light');
+function applyTheme(t) {
+  html.setAttribute('data-theme', t);
+  btnDark.classList.toggle('is-active',  t === 'dark');
+  btnLight.classList.toggle('is-active', t === 'light');
+  try { localStorage.setItem('da-theme', t); } catch(e) {}
+}
+(function() {
+  let saved; try { saved = localStorage.getItem('da-theme'); } catch(e) {}
+  if (saved === 'dark' || saved === 'light') applyTheme(saved);
+  else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) applyTheme('light');
+  else applyTheme('dark');
+})();
+btnDark.addEventListener('click',  () => applyTheme('dark'));
+btnLight.addEventListener('click', () => applyTheme('light'));
+
+const sections = document.querySelectorAll('.doc-section');
+const links    = document.querySelectorAll('.sidebar__link');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('is-active'));
+      const active = document.querySelector(`.sidebar__link[href="#${e.target.id}"]`);
+      if (active) active.classList.add('is-active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+
+// Lightbox
+const lightbox      = document.getElementById('lightbox');
+const lightboxImg   = document.getElementById('lightbox-img');
+const lightboxLabel = document.getElementById('lightbox-label');
+const lightboxClose = document.getElementById('lightbox-close');
+
+function openLightbox(src, label) {
+  lightboxImg.src = src;
+  lightboxLabel.textContent = label || '';
+  lightbox.classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  lightbox.classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+
+document.querySelectorAll('.doc-img').forEach(block => {
+  block.addEventListener('click', () => {
+    const visibleImg = [...block.querySelectorAll('img')].find(i => getComputedStyle(i).display !== 'none');
+    if (!visibleImg) return;
+    const caption = block.querySelector('.doc-img__caption');
+    openLightbox(visibleImg.src, caption ? caption.textContent : '');
+  });
+});
+
+lightboxClose.addEventListener('click', e => { e.stopPropagation(); closeLightbox(); });
+lightbox.addEventListener('click', closeLightbox);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
+</body>
+</html>
